@@ -108,17 +108,7 @@ const HotjarWidget: React.FC<HotjarWidgetProps> = ({ onClose }) => {
     }
   };
 
-  const handleSurvey = () => {
-    trackEvent('survey_widget_clicked', {
-      action: 'survey',
-      timestamp: new Date().toISOString()
-    });
-    
-    // Trigger Hotjar survey
-    if (typeof window !== 'undefined' && window.hj) {
-      window.hj!('trigger', 'survey');
-    }
-  };
+
 
   const handleClose = () => {
     setIsVisible(false);
@@ -145,10 +135,7 @@ const HotjarWidget: React.FC<HotjarWidgetProps> = ({ onClose }) => {
           Danos tu opinión
         </FeedbackButton>
         
-        <SurveyButton onClick={handleSurvey}>
-          <MessageCircle size={16} />
-          Encuesta rápida
-        </SurveyButton>
+
       </WidgetWrapper>
     </WidgetContainer>
   );

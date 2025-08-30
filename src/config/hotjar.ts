@@ -16,8 +16,8 @@ export const HOTJAR_CONFIG = {
     // Habilitar grabación de sesiones
     recordings: true,
     
-    // Habilitar encuestas
-    surveys: true,
+    // Deshabilitar encuestas automáticas
+    surveys: false,
     
     // Habilitar feedback
     feedback: true,
@@ -47,16 +47,28 @@ export const initHotjar = () => {
   const script = document.createElement('script');
   script.innerHTML = `
     (function(h,o,t,j,a,r){
-      h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-      h._hjSettings={hjid:${HOTJAR_CONFIG.hjid},hjsv:${HOTJAR_CONFIG.hjsv}};
-      a=o.getElementsByTagName('head')[0];
-      r=o.createElement('script');r.async=1;
-      r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
-      a.appendChild(r);
+        h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+        h._hjSettings={hjid:${HOTJAR_CONFIG.hjid},hjsv:${HOTJAR_CONFIG.hjsv}};
+        a=o.getElementsByTagName('head')[0];
+        r=o.createElement('script');r.async=1;
+        r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+        a.appendChild(r);
     })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
   `;
   
   document.head.appendChild(script);
+  
+  // Configurar Hotjar después de cargar
+  setTimeout(() => {
+    if (window.hj) {
+      // Configurar para que no muestre encuestas automáticamente
+      window.hj('settings', {
+        surveys: {
+          enabled: false
+        }
+      });
+    }
+  }, 2000);
 };
 
 // Función para enviar eventos personalizados a Hotjar
