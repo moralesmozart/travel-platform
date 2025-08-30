@@ -74,5 +74,26 @@
         }
       }(window.location))
     </script>
+    
+    <!-- Additional redirect handling for direct URL access -->
+    <script type="text/javascript">
+      // Handle direct URL access for React Router
+      (function() {
+        var path = window.location.pathname;
+        var basePath = '/travel-platform';
+        
+        // If we're not on the base path and not already redirected
+        if (path !== basePath && path !== basePath + '/' && !window.location.search.includes('/?/')) {
+          // Check if this is a valid route
+          var validRoutes = ['/quiz', '/results', '/submit-masia', '/admin/login', '/admin/dashboard'];
+          var currentRoute = path.replace(basePath, '');
+          
+          if (validRoutes.includes(currentRoute) || currentRoute.startsWith('/admin/')) {
+            // This is a valid route, let React Router handle it
+            return;
+          }
+        }
+      })();
+    </script>
   </body>
 </html>
