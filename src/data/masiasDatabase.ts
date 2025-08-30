@@ -184,7 +184,10 @@ export const filterMasiasByPreferences = (
     budget?: string;
   }
 ): Masia[] => {
-  let filteredMasias = [...masiasDatabase];
+  // Solo mostrar masías aprobadas o sin estado (las originales)
+  let filteredMasias = masiasDatabase.filter(masia => 
+    !masia.status || masia.status === 'approved'
+  );
 
   // Filtrar por presupuesto
   if (preferences.budget) {

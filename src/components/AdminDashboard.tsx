@@ -441,28 +441,59 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onBack }) => 
   // Combinar masias de la base de datos con las pendientes de ejemplo
   const allMasias: PendingMasia[] = [
     ...pendingMasias, // Datos de ejemplo
-    // Las masias de la base de datos principal no tienen status, así que las consideramos como aprobadas
-    ...masiasDatabase.map(masia => ({
-      ...masia,
-      status: 'approved' as const,
-      submittedBy: 'Sistema',
-      submittedAt: new Date().toISOString()
-    }))
+    // Las masias de la base de datos principal que no tienen status se consideran como aprobadas
+    ...masiasDatabase
+      .filter(masia => !masia.status || masia.status === 'approved')
+      .map(masia => ({
+        ...masia,
+        status: (masia.status as 'approved') || 'approved',
+        submittedBy: masia.submittedBy || 'Sistema',
+        submittedAt: masia.submittedAt || new Date().toISOString()
+      })),
+    // Agregar masias pendientes de la base de datos
+    ...masiasDatabase
+      .filter(masia => masia.status === 'pending')
+      .map(masia => ({
+        ...masia,
+        status: 'pending' as const,
+        submittedBy: masia.submittedBy || 'Usuario',
+        submittedAt: masia.submittedAt || new Date().toISOString()
+      }))
   ];
   
   const [masias, setMasias] = useState<PendingMasia[]>(allMasias);
   const [editingMasia, setEditingMasia] = useState<Masia | null>(null);
 
   const handleApprove = (masiaId: string) => {
+    // Actualizar en la base de datos
+    const masiaToUpdate = masias.find(m => m.id === masiaId);
+    if (masiaToUpdate) {
+      const updatedMasia = { ...masiaToUpdate, status: 'approved' as const };
+      updateMasiaInDatabase(updatedMasia);
+    }
+    
+    // Actualizar en el estado local
     setMasias(prev => prev.map(masia => 
       masia.id === masiaId ? { ...masia, status: 'approved' as const } : masia
     ));
+    
+    alert('Masia aprobada exitosamente');
   };
 
   const handleReject = (masiaId: string) => {
+    // Actualizar en la base de datos
+    const masiaToUpdate = masias.find(m => m.id === masiaId);
+    if (masiaToUpdate) {
+      const updatedMasia = { ...masiaToUpdate, status: 'rejected' as const };
+      updateMasiaInDatabase(updatedMasia);
+    }
+    
+    // Actualizar en el estado local
     setMasias(prev => prev.map(masia => 
       masia.id === masiaId ? { ...masia, status: 'rejected' as const } : masia
     ));
+    
+    alert('Masia rechazada');
   };
 
   const handleEdit = (masiaId: string) => {

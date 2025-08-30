@@ -258,8 +258,10 @@ const ButtonContainer = styled.div`
   margin-top: 20px;
 `;
 
-// Usar la base de datos de masias
-const sampleMasias = masiasDatabase;
+// Usar solo masías aprobadas de la base de datos
+const sampleMasias = masiasDatabase.filter(masia => 
+  !masia.status || masia.status === 'approved'
+);
 
 const ResultsPage: React.FC<ResultsPageProps> = ({
   onNewSearch,
