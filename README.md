@@ -132,6 +132,9 @@ REACT_APP_ADMIN_EMAIL=admin@masiaconnect.com
 REACT_APP_ADMIN_PASSWORD=admin123
 REACT_APP_API_URL=your_api_url
 REACT_APP_ENVIRONMENT=development
+
+# Hotjar Configuration
+REACT_APP_HOTJAR_ID=your_hotjar_id_here
 ```
 
 ### 🔒 Seguridad

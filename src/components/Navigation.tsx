@@ -10,6 +10,7 @@ import { filterMasiasByPreferences, addMasiaToDatabase } from '../data/masiasDat
 import { validateAdminCredentials } from '../config/auth';
 import { loginRateLimiter } from '../utils/rateLimiter';
 import RateLimitMonitor from './RateLimitMonitor';
+import { trackEvent } from '../config/hotjar';
 
 const NavigationContainer = styled.div`
   min-height: 100vh;
@@ -23,6 +24,12 @@ const Navigation: React.FC = () => {
   const [loginError, setLoginError] = useState<string>('');
 
   const handleFindMasia = () => {
+    // Track evento de búsqueda de masía
+    trackEvent('masia_search_started', {
+      page: 'home',
+      timestamp: new Date().toISOString()
+    });
+    
     setCurrentPage('season-selector');
     setCurrentStep(1);
     setSelectedSeason('');
@@ -39,6 +46,13 @@ const Navigation: React.FC = () => {
   };
 
   const handleSeasonSelect = (season: string) => {
+    // Track selección de temporada
+    trackEvent('season_selected', {
+      season: season,
+      step: currentStep,
+      timestamp: new Date().toISOString()
+    });
+    
     setSelectedSeason(season);
     console.log(`Opción seleccionada en paso ${currentStep}:`, season);
   };
@@ -91,6 +105,12 @@ const Navigation: React.FC = () => {
   };
 
   const handleBookNow = (masiaId: string) => {
+    // Track evento de reserva
+    trackEvent('masia_booking_started', {
+      masiaId: masiaId,
+      timestamp: new Date().toISOString()
+    });
+    
     console.log('Reservando masia:', masiaId);
     // Aquí puedes agregar la lógica para ir a la página de reserva
   };
@@ -103,6 +123,13 @@ const Navigation: React.FC = () => {
       const blockedUntil = rateLimitResult.blockedUntil;
       const remainingTime = blockedUntil ? Math.ceil((blockedUntil - Date.now()) / 1000 / 60) : 0;
       setLoginError(`Demasiados intentos fallidos. Intenta de nuevo en ${remainingTime} minutos.`);
+      
+      // Track intento bloqueado
+      trackEvent('admin_login_blocked', {
+        reason: 'rate_limit_exceeded',
+        remainingTime: remainingTime,
+        timestamp: new Date().toISOString()
+      });
       return;
     }
 
@@ -112,10 +139,23 @@ const Navigation: React.FC = () => {
       loginRateLimiter.resetAttempts();
       setCurrentPage('admin-dashboard');
       setLoginError('');
+      
+      // Track login exitoso
+      trackEvent('admin_login_success', {
+        email: email,
+        timestamp: new Date().toISOString()
+      });
     } else {
       // Login fallido - mostrar intentos restantes
       const remainingAttempts = rateLimitResult.remainingAttempts;
       setLoginError(`Credenciales incorrectas. Intentos restantes: ${remainingAttempts}.`);
+      
+      // Track login fallido
+      trackEvent('admin_login_failed', {
+        email: email,
+        remainingAttempts: remainingAttempts,
+        timestamp: new Date().toISOString()
+      });
     }
   };
 
@@ -128,6 +168,14 @@ const Navigation: React.FC = () => {
   };
 
   const handleMasiaSubmission = (masiaData: any) => {
+    // Track evento de envío de masía
+    trackEvent('masia_submitted', {
+      masiaName: masiaData.name,
+      location: masiaData.location,
+      ownerEmail: masiaData.ownerEmail,
+      timestamp: new Date().toISOString()
+    });
+    
     // Agregar la masia a la base de datos como pendiente
     addMasiaToDatabase({
       ...masiaData,
