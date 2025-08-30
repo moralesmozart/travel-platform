@@ -7,6 +7,9 @@ import AdminLogin from './AdminLogin';
 import AdminDashboard from './AdminDashboard';
 import MasiaSubmissionForm from './MasiaSubmissionForm';
 import { filterMasiasByPreferences, addMasiaToDatabase } from '../data/masiasDatabase';
+import { validateAdminCredentials } from '../config/auth';
+import { loginRateLimiter } from '../utils/rateLimiter';
+import RateLimitMonitor from './RateLimitMonitor';
 
 const NavigationContainer = styled.div`
   min-height: 100vh;
@@ -93,12 +96,26 @@ const Navigation: React.FC = () => {
   };
 
   const handleAdminAuth = (email: string, password: string) => {
-    // Credenciales de prueba
-    if (email === 'admin@masiaconnect.com' && password === 'admin123') {
+    // Verificar rate limiting
+    const rateLimitResult = loginRateLimiter.recordAttempt();
+    
+    if (!rateLimitResult.allowed) {
+      const blockedUntil = rateLimitResult.blockedUntil;
+      const remainingTime = blockedUntil ? Math.ceil((blockedUntil - Date.now()) / 1000 / 60) : 0;
+      setLoginError(`Demasiados intentos fallidos. Intenta de nuevo en ${remainingTime} minutos.`);
+      return;
+    }
+
+    // Validar credenciales usando la función de configuración
+    if (validateAdminCredentials(email, password)) {
+      // Login exitoso - resetear intentos
+      loginRateLimiter.resetAttempts();
       setCurrentPage('admin-dashboard');
       setLoginError('');
     } else {
-      setLoginError('Credenciales incorrectas. Usa las credenciales de prueba.');
+      // Login fallido - mostrar intentos restantes
+      const remainingAttempts = rateLimitResult.remainingAttempts;
+      setLoginError(`Credenciales incorrectas. Intentos restantes: ${remainingAttempts}.`);
     }
   };
 
@@ -161,6 +178,9 @@ const Navigation: React.FC = () => {
           onSubmit={handleMasiaSubmission}
         />
       ) : null}
+      
+      {/* Monitor de Rate Limiting (solo en desarrollo) */}
+      <RateLimitMonitor />
     </NavigationContainer>
   );
 };

@@ -13,13 +13,19 @@
 - ✅ **CSP**: Content Security Policy configurado
 - ✅ **No dangerouslySetInnerHTML**: No se usa en ningún componente
 
-### **3. Headers de Seguridad**
+### **3. Rate Limiting**
+- ✅ **5 intentos por minuto**: Límite configurado para login
+- ✅ **Bloqueo de 5 minutos**: Después de exceder el límite
+- ✅ **Monitor en desarrollo**: Visualización en tiempo real
+- ✅ **Reset automático**: Después de login exitoso
+
+### **4. Headers de Seguridad**
 - ✅ **X-Content-Type-Options**: `nosniff`
 - ✅ **X-Frame-Options**: `DENY`
 - ✅ **X-XSS-Protection**: `1; mode=block`
 - ✅ **Referrer-Policy**: `strict-origin-when-cross-origin`
 
-### **4. Validaciones del Cliente**
+### **5. Validaciones del Cliente**
 - ✅ **Longitud máxima**: Campos de texto limitados
 - ✅ **Tipos de datos**: Validación de números y strings
 - ✅ **Formato**: Validación de formatos específicos
@@ -76,3 +82,6 @@ Si encuentras una vulnerabilidad de seguridad:
 - Implementada sanitización de texto
 - Agregados headers de seguridad
 - Configurado Content Security Policy
+- **OCULTADAS CREDENCIALES**: Credenciales movidas a variables de entorno
+- **SEGURIDAD EN PRODUCCIÓN**: Credenciales de demo no se muestran en producción
+- **RATE LIMITING**: Implementado límite de 5 intentos por minuto con bloqueo de 5 minutos

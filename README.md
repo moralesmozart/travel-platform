@@ -33,11 +33,15 @@ Travel Platform es una aplicación web completa que conecta viajeros con las mas
 ### Instalación Local
 ```bash
 # Clonar el repositorio
-git clone https://github.com/mozartmorales/travel-platform.git
+git clone https://github.com/moralesmozart/travel-platform.git
 cd travel-platform
 
 # Instalar dependencias
 npm install
+
+# Configurar variables de entorno (opcional)
+cp .env.example .env.local
+# Edita .env.local con tus credenciales
 
 # Ejecutar en modo desarrollo
 npm start
@@ -124,9 +128,16 @@ npm run deploy
 ### Variables de Entorno
 ```bash
 # Crear archivo .env.local para configuraciones locales
+REACT_APP_ADMIN_EMAIL=admin@masiaconnect.com
+REACT_APP_ADMIN_PASSWORD=admin123
 REACT_APP_API_URL=your_api_url
 REACT_APP_ENVIRONMENT=development
 ```
+
+### 🔒 Seguridad
+- Las credenciales de administrador están configuradas en variables de entorno
+- En producción, las credenciales de demo no se muestran
+- Revisa el archivo `security.md` para más detalles de seguridad
 
 ### Scripts Disponibles
 - `npm start` - Servidor de desarrollo

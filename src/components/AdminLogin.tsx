@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { getDemoCredentials } from '../config/auth';
+import { loginRateLimiter } from '../utils/rateLimiter';
 
 interface AdminLoginProps {
   onLogin: (email: string, password: string) => void;
@@ -178,10 +180,26 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin, onBack, error }) => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [rateLimitInfo, setRateLimitInfo] = useState<string>('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    
+    // Verificar rate limiting antes de intentar login
+    const stats = loginRateLimiter.getStats();
+    if (stats.blocked) {
+      const remainingTime = stats.blockedUntil ? Math.ceil((stats.blockedUntil - Date.now()) / 1000 / 60) : 0;
+      setRateLimitInfo(`Cuenta bloqueada. Intenta de nuevo en ${remainingTime} minutos.`);
+      setIsLoading(false);
+      return;
+    }
+    
+    // Mostrar información de intentos restantes
+    if (stats.attempts > 0) {
+      const remainingAttempts = 5 - stats.attempts;
+      setRateLimitInfo(`Intentos restantes: ${remainingAttempts}`);
+    }
     
     // Simular delay de autenticación
     setTimeout(() => {
@@ -205,6 +223,13 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin, onBack, error }) => {
           <ErrorMessage>
             <AlertCircle size={16} />
             {error}
+          </ErrorMessage>
+        )}
+
+        {rateLimitInfo && (
+          <ErrorMessage style={{ backgroundColor: '#FFF3CD', color: '#856404', borderColor: '#FFEAA7' }}>
+            <AlertCircle size={16} />
+            {rateLimitInfo}
           </ErrorMessage>
         )}
 
@@ -240,11 +265,13 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin, onBack, error }) => {
           </LoginButton>
         </Form>
 
-        <DemoCredentials>
-          <strong>Credenciales de prueba:</strong><br />
-          Email: admin@masiaconnect.com<br />
-          Contraseña: admin123
-        </DemoCredentials>
+        {getDemoCredentials() && (
+          <DemoCredentials>
+            <strong>Credenciales de prueba:</strong><br />
+            Email: {getDemoCredentials()?.email}<br />
+            Contraseña: {getDemoCredentials()?.password}
+          </DemoCredentials>
+        )}
 
         <BackButton onClick={onBack}>
           ← Volver al sitio principal
