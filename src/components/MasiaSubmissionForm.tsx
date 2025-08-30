@@ -488,6 +488,7 @@ const sanitizeText = (text: string): string => {
     .replace(/[<>]/g, '') // Remover < y >
     .replace(/javascript:/gi, '') // Remover javascript:
     .replace(/on\w+=/gi, '') // Remover event handlers
+    .replace(/\s+/g, ' ') // Normalizar espacios múltiples a uno solo
     .trim()
     .substring(0, 1000); // Limitar longitud
 };
@@ -678,25 +679,56 @@ const MasiaSubmissionForm: React.FC<MasiaSubmissionFormProps> = ({ onBack, onSub
       return;
     }
     
-    // Sanitizar todos los campos de texto
-    const sanitizedData = {
+    // Procesar y limpiar todos los campos
+    const processedData = {
       ...formData,
-      name: sanitizeText(formData.name),
-      description: sanitizeText(formData.description),
-      location: sanitizeText(formData.location),
-      ownerName: sanitizeText(formData.ownerName),
-      ownerSurname: sanitizeText(formData.ownerSurname),
-    };
-    
-    const masiaData = {
-      ...sanitizedData,
-      id: `masia_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      // Limpiar y procesar campos de texto
+      name: sanitizeText(formData.name?.trim() || ''),
+      description: sanitizeText(formData.description?.trim() || ''),
+      location: sanitizeText(formData.location?.trim() || ''),
+      url: formData.url?.trim() || '',
+      image: formData.image?.trim() || '',
+      ownerName: sanitizeText(formData.ownerName?.trim() || ''),
+      ownerSurname: sanitizeText(formData.ownerSurname?.trim() || ''),
+      ownerEmail: formData.ownerEmail?.trim() || '',
+      ownerPhone: formData.ownerPhone?.trim() || '',
+      
+      // Procesar campos numéricos
       price: parseFloat(formData.price) || 0,
       capacity: parseInt(formData.capacity) || 0,
       rating: parseFloat(formData.rating) || 0,
+      
+      // Procesar arrays y limpiar elementos vacíos
+      recommendations: Array.isArray(formData.recommendations) 
+        ? formData.recommendations.map(rec => sanitizeText(rec?.trim())).filter(Boolean)
+        : [],
+      features: Array.isArray(formData.features)
+        ? formData.features.map(feat => sanitizeText(feat?.trim())).filter(Boolean)
+        : [],
+      amenities: Array.isArray(formData.amenities)
+        ? formData.amenities.map(amenity => sanitizeText(amenity?.trim())).filter(Boolean)
+        : [],
+      activities: Array.isArray(formData.activities)
+        ? formData.activities.map(activity => sanitizeText(activity?.trim())).filter(Boolean)
+        : [],
+      seasonality: Array.isArray(formData.seasonality)
+        ? formData.seasonality.map(season => sanitizeText(season?.trim())).filter(Boolean)
+        : [],
+      
+      // Procesar booleanos
+      petFriendly: Boolean(formData.petFriendly),
+      familyFriendly: Boolean(formData.familyFriendly),
+      romantic: Boolean(formData.romantic),
+      groupFriendly: Boolean(formData.groupFriendly),
+      
+      // Generar ID único
+      id: `masia_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      
+      // Establecer estado inicial como pendiente
+      status: 'pending' as const
     };
     
-    onSubmit(masiaData);
+    onSubmit(processedData);
   };
 
   // Función para validar email en tiempo real

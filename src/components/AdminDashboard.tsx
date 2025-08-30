@@ -465,35 +465,139 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onBack }) => 
   const [editingMasia, setEditingMasia] = useState<Masia | null>(null);
 
   const handleApprove = (masiaId: string) => {
-    // Actualizar en la base de datos
+    // Encontrar la masía pendiente
     const masiaToUpdate = masias.find(m => m.id === masiaId);
     if (masiaToUpdate) {
-      const updatedMasia = { ...masiaToUpdate, status: 'approved' as const };
-      updateMasiaInDatabase(updatedMasia);
+      // Procesar y limpiar todos los campos
+      const processedMasia = {
+        ...masiaToUpdate,
+        // Limpiar y procesar campos de texto
+        name: masiaToUpdate.name?.trim() || '',
+        location: masiaToUpdate.location?.trim() || '',
+        description: masiaToUpdate.description?.trim() || '',
+        url: masiaToUpdate.url?.trim() || '',
+        image: masiaToUpdate.image?.trim() || '',
+        
+        // Procesar campos numéricos
+        price: Number(masiaToUpdate.price) || 0,
+        capacity: Number(masiaToUpdate.capacity) || 0,
+        rating: Number(masiaToUpdate.rating) || 0,
+        
+        // Procesar arrays
+        recommendations: Array.isArray(masiaToUpdate.recommendations) 
+          ? masiaToUpdate.recommendations.map(rec => rec?.trim()).filter(Boolean)
+          : [],
+        features: Array.isArray(masiaToUpdate.features)
+          ? masiaToUpdate.features.map(feat => feat?.trim()).filter(Boolean)
+          : [],
+        amenities: Array.isArray(masiaToUpdate.amenities)
+          ? masiaToUpdate.amenities.map(amenity => amenity?.trim()).filter(Boolean)
+          : [],
+        activities: Array.isArray(masiaToUpdate.activities)
+          ? masiaToUpdate.activities.map(activity => activity?.trim()).filter(Boolean)
+          : [],
+        seasonality: Array.isArray(masiaToUpdate.seasonality)
+          ? masiaToUpdate.seasonality.map(season => season?.trim()).filter(Boolean)
+          : [],
+        
+        // Procesar booleanos
+        petFriendly: Boolean(masiaToUpdate.petFriendly),
+        familyFriendly: Boolean(masiaToUpdate.familyFriendly),
+        romantic: Boolean(masiaToUpdate.romantic),
+        groupFriendly: Boolean(masiaToUpdate.groupFriendly),
+        
+        // Cambiar estado a aprobado
+        status: 'approved' as const,
+        
+        // Mantener información de envío
+        submittedBy: masiaToUpdate.submittedBy || 'Usuario',
+        submittedAt: masiaToUpdate.submittedAt || new Date().toISOString(),
+        
+        // Mantener información del propietario
+        ownerName: masiaToUpdate.ownerName?.trim() || '',
+        ownerSurname: masiaToUpdate.ownerSurname?.trim() || '',
+        ownerEmail: masiaToUpdate.ownerEmail?.trim() || '',
+        ownerPhone: masiaToUpdate.ownerPhone?.trim() || ''
+      };
+      
+      // Actualizar en la base de datos
+      updateMasiaInDatabase(processedMasia);
+      
+      // Actualizar en el estado local
+      setMasias(prev => prev.map(masia => 
+        masia.id === masiaId ? processedMasia : masia
+      ));
+      
+      alert('Masia aprobada exitosamente. Todos los datos han sido procesados y guardados.');
     }
-    
-    // Actualizar en el estado local
-    setMasias(prev => prev.map(masia => 
-      masia.id === masiaId ? { ...masia, status: 'approved' as const } : masia
-    ));
-    
-    alert('Masia aprobada exitosamente');
   };
 
   const handleReject = (masiaId: string) => {
-    // Actualizar en la base de datos
+    // Encontrar la masía pendiente
     const masiaToUpdate = masias.find(m => m.id === masiaId);
     if (masiaToUpdate) {
-      const updatedMasia = { ...masiaToUpdate, status: 'rejected' as const };
-      updateMasiaInDatabase(updatedMasia);
+      // Procesar y limpiar todos los campos antes de rechazar
+      const processedMasia = {
+        ...masiaToUpdate,
+        // Limpiar y procesar campos de texto
+        name: masiaToUpdate.name?.trim() || '',
+        location: masiaToUpdate.location?.trim() || '',
+        description: masiaToUpdate.description?.trim() || '',
+        url: masiaToUpdate.url?.trim() || '',
+        image: masiaToUpdate.image?.trim() || '',
+        
+        // Procesar campos numéricos
+        price: Number(masiaToUpdate.price) || 0,
+        capacity: Number(masiaToUpdate.capacity) || 0,
+        rating: Number(masiaToUpdate.rating) || 0,
+        
+        // Procesar arrays
+        recommendations: Array.isArray(masiaToUpdate.recommendations) 
+          ? masiaToUpdate.recommendations.map(rec => rec?.trim()).filter(Boolean)
+          : [],
+        features: Array.isArray(masiaToUpdate.features)
+          ? masiaToUpdate.features.map(feat => feat?.trim()).filter(Boolean)
+          : [],
+        amenities: Array.isArray(masiaToUpdate.amenities)
+          ? masiaToUpdate.amenities.map(amenity => amenity?.trim()).filter(Boolean)
+          : [],
+        activities: Array.isArray(masiaToUpdate.activities)
+          ? masiaToUpdate.activities.map(activity => activity?.trim()).filter(Boolean)
+          : [],
+        seasonality: Array.isArray(masiaToUpdate.seasonality)
+          ? masiaToUpdate.seasonality.map(season => season?.trim()).filter(Boolean)
+          : [],
+        
+        // Procesar booleanos
+        petFriendly: Boolean(masiaToUpdate.petFriendly),
+        familyFriendly: Boolean(masiaToUpdate.familyFriendly),
+        romantic: Boolean(masiaToUpdate.romantic),
+        groupFriendly: Boolean(masiaToUpdate.groupFriendly),
+        
+        // Cambiar estado a rechazado
+        status: 'rejected' as const,
+        
+        // Mantener información de envío
+        submittedBy: masiaToUpdate.submittedBy || 'Usuario',
+        submittedAt: masiaToUpdate.submittedAt || new Date().toISOString(),
+        
+        // Mantener información del propietario
+        ownerName: masiaToUpdate.ownerName?.trim() || '',
+        ownerSurname: masiaToUpdate.ownerSurname?.trim() || '',
+        ownerEmail: masiaToUpdate.ownerEmail?.trim() || '',
+        ownerPhone: masiaToUpdate.ownerPhone?.trim() || ''
+      };
+      
+      // Actualizar en la base de datos
+      updateMasiaInDatabase(processedMasia);
+      
+      // Actualizar en el estado local
+      setMasias(prev => prev.map(masia => 
+        masia.id === masiaId ? processedMasia : masia
+      ));
+      
+      alert('Masia rechazada. Los datos han sido procesados y guardados.');
     }
-    
-    // Actualizar en el estado local
-    setMasias(prev => prev.map(masia => 
-      masia.id === masiaId ? { ...masia, status: 'rejected' as const } : masia
-    ));
-    
-    alert('Masia rechazada');
   };
 
   const handleEdit = (masiaId: string) => {
