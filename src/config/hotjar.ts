@@ -2,8 +2,8 @@
 // Reemplaza HOTJAR_ID con tu ID real de Hotjar
 
 export const HOTJAR_CONFIG = {
-  // ID de Hotjar (reemplazar con tu ID real)
-  hjid: process.env.REACT_APP_HOTJAR_ID || 'YOUR_HOTJAR_ID',
+  // ID de Hotjar (tu ID real)
+  hjid: process.env.REACT_APP_HOTJAR_ID || '6507380',
   
   // Versión de Hotjar
   hjsv: 6,
