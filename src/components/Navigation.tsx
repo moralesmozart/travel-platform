@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import styled from 'styled-components';
 import HomePage from './HomePage';
 import SeasonSelector from './SeasonSelector';
@@ -17,25 +18,29 @@ const NavigationContainer = styled.div`
 `;
 
 const Navigation: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<'home' | 'season-selector' | 'results' | 'admin-login' | 'admin-dashboard' | 'masia-submission'>('home');
+  const navigate = useNavigate();
+  const location = useLocation();
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedSeason, setSelectedSeason] = useState<string>('');
   const [allSelections, setAllSelections] = useState<{[key: number]: string[]}>({});
   const [loginError, setLoginError] = useState<string>('');
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(() => {
+    return localStorage.getItem('adminLoggedIn') === 'true';
+  });
 
   const handleFindMasia = () => {
-    setCurrentPage('season-selector');
+    navigate('/quiz');
     setCurrentStep(1);
     setSelectedSeason('');
     setAllSelections({});
   };
 
   const handleSubmitMasia = () => {
-    setCurrentPage('masia-submission');
+    navigate('/submit-masia');
   };
 
   const handleAdminLogin = () => {
-    setCurrentPage('admin-login');
+    navigate('/admin/login');
     setLoginError('');
   };
 
@@ -70,7 +75,7 @@ const Navigation: React.FC = () => {
         };
         
         console.log('Preferencias para filtrado:', preferences);
-        setCurrentPage('results');
+        navigate('/results');
       }
     }
   };
@@ -80,12 +85,12 @@ const Navigation: React.FC = () => {
       setCurrentStep(prev => prev - 1);
       setSelectedSeason('');
     } else {
-      setCurrentPage('home');
+      navigate('/');
     }
   };
 
   const handleNewSearch = () => {
-    setCurrentPage('home');
+    navigate('/');
     setCurrentStep(1);
     setSelectedSeason('');
     setAllSelections({});
@@ -113,25 +118,25 @@ const Navigation: React.FC = () => {
     if (validateAdminCredentials(email, password)) {
       // Login exitoso - resetear intentos
       loginRateLimiter.resetAttempts();
-      setCurrentPage('admin-dashboard');
+      setIsAdminLoggedIn(true);
+      localStorage.setItem('adminLoggedIn', 'true');
+      navigate('/admin/dashboard');
       setLoginError('');
-      
-
     } else {
       // Login fallido - mostrar intentos restantes
       const remainingAttempts = rateLimitResult.remainingAttempts;
       setLoginError(`Credenciales incorrectas. Intentos restantes: ${remainingAttempts}.`);
-      
-
     }
   };
 
   const handleAdminLogout = () => {
-    setCurrentPage('home');
+    setIsAdminLoggedIn(false);
+    localStorage.removeItem('adminLoggedIn');
+    navigate('/');
   };
 
   const handleBackToHome = () => {
-    setCurrentPage('home');
+    navigate('/');
   };
 
   const handleMasiaSubmission = (masiaData: any) => {
@@ -144,47 +149,75 @@ const Navigation: React.FC = () => {
     });
     
     alert('¡Tu masia ha sido enviada para aprobación! Te contactaremos pronto.');
-    setCurrentPage('home');
+    navigate('/');
   };
 
   return (
     <NavigationContainer>
-      {currentPage === 'home' ? (
-        <HomePage onFindMasia={handleFindMasia} onAdminLogin={handleAdminLogin} onSubmitMasia={handleSubmitMasia} />
-      ) : currentPage === 'season-selector' ? (
-        <SeasonSelector
-          currentStep={currentStep}
-          totalSteps={5}
-          onSeasonSelect={handleSeasonSelect}
-          onContinue={handleContinue}
-          onBack={handleBack}
-          title="Quiz de Masias"
-          subtitle="Encuentra tu masia perfecta"
-          continueText="Continuar"
-        />
-      ) : currentPage === 'results' ? (
-        <ResultsPage
-          onNewSearch={handleNewSearch}
-          onBookNow={handleBookNow}
-          resultsCount={6}
-        />
-      ) : currentPage === 'admin-login' ? (
-        <AdminLogin
-          onLogin={handleAdminAuth}
-          onBack={handleBackToHome}
-          error={loginError}
-        />
-      ) : currentPage === 'admin-dashboard' ? (
-        <AdminDashboard
-          onLogout={handleAdminLogout}
-          onBack={handleBackToHome}
-        />
-      ) : currentPage === 'masia-submission' ? (
-        <MasiaSubmissionForm
-          onBack={handleBackToHome}
-          onSubmit={handleMasiaSubmission}
-        />
-      ) : null}
+      <Routes>
+        {/* Ruta principal */}
+        <Route path="/" element={
+          <HomePage 
+            onFindMasia={handleFindMasia} 
+            onAdminLogin={handleAdminLogin} 
+            onSubmitMasia={handleSubmitMasia} 
+          />
+        } />
+        
+        {/* Ruta del quiz */}
+        <Route path="/quiz" element={
+          <SeasonSelector
+            currentStep={currentStep}
+            totalSteps={5}
+            onSeasonSelect={handleSeasonSelect}
+            onContinue={handleContinue}
+            onBack={handleBack}
+            title="Quiz de Masias"
+            subtitle="Encuentra tu masia perfecta"
+            continueText="Continuar"
+          />
+        } />
+        
+        {/* Ruta de resultados */}
+        <Route path="/results" element={
+          <ResultsPage
+            onNewSearch={handleNewSearch}
+            onBookNow={handleBookNow}
+            resultsCount={6}
+          />
+        } />
+        
+        {/* Ruta de envío de masía */}
+        <Route path="/submit-masia" element={
+          <MasiaSubmissionForm
+            onBack={handleBackToHome}
+            onSubmit={handleMasiaSubmission}
+          />
+        } />
+        
+        {/* Rutas de admin */}
+        <Route path="/admin/login" element={
+          <AdminLogin
+            onLogin={handleAdminAuth}
+            onBack={handleBackToHome}
+            error={loginError}
+          />
+        } />
+        
+        <Route path="/admin/dashboard" element={
+          isAdminLoggedIn ? (
+            <AdminDashboard
+              onLogout={handleAdminLogout}
+              onBack={handleBackToHome}
+            />
+          ) : (
+            <Navigate to="/admin/login" replace />
+          )
+        } />
+        
+        {/* Ruta por defecto */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
       
       {/* Monitor de Rate Limiting (solo en desarrollo) */}
       <RateLimitMonitor />
