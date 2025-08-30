@@ -1,109 +1,175 @@
-# Travel Platform - Season Selector Component
+# 🏠 Travel Platform - Plataforma de Masías Catalanas
 
-Un componente moderno y elegante para selección de estaciones de viaje, construido con React, TypeScript y styled-components.
+Una plataforma web moderna y elegante para descubrir y reservar masías tradicionales en Cataluña, construida con React, TypeScript y styled-components.
 
-## 🚀 Características
+## 🌟 Descripción
 
-- **Diseño Moderno**: Interfaz limpia y atractiva con gradientes y animaciones suaves
-- **Totalmente Responsive**: Se adapta a diferentes tamaños de pantalla
-- **TypeScript**: Tipado completo para mejor desarrollo y mantenimiento
-- **Personalizable**: Props para personalizar textos, colores y comportamiento
-- **Accesible**: Navegación por teclado y semántica HTML correcta
-- **Iconos**: Iconos hermosos de Lucide React para cada estación
+Travel Platform es una aplicación web completa que conecta viajeros con las masías más auténticas de Cataluña. Nuestra plataforma ofrece una experiencia de usuario intuitiva para encontrar la masía perfecta según la temporada, preferencias y necesidades específicas.
 
-## 📦 Instalación
+### 🎯 Características Principales
+
+- **🏠 Catálogo de Masías**: Base de datos completa con masías auténticas catalanas
+- **🌤️ Selector de Temporadas**: Interfaz intuitiva para elegir la época del año
+- **🔍 Filtros Avanzados**: Búsqueda por características, servicios y ubicación
+- **📱 Diseño Responsive**: Experiencia optimizada para móviles y desktop
+- **👨‍💼 Panel de Administración**: Gestión completa de masías y reservas
+- **📝 Formulario de Envío**: Los propietarios pueden añadir sus masías
+- **🎨 UI Moderna**: Diseño elegante con animaciones suaves
+
+## 🚀 Tecnologías Utilizadas
+
+- **Frontend**: React 19 + TypeScript
+- **Estilos**: Styled Components + CSS3
+- **Iconos**: Lucide React
+- **Despliegue**: GitHub Pages
+- **Control de Versiones**: Git
+
+## 📦 Instalación y Uso
+
+### Requisitos Previos
+- Node.js (versión 16 o superior)
+- npm o yarn
+
+### Instalación Local
+```bash
+# Clonar el repositorio
+git clone https://github.com/mozartmorales/travel-platform.git
+cd travel-platform
+
+# Instalar dependencias
+npm install
+
+# Ejecutar en modo desarrollo
+npm start
+
+# Crear build de producción
+npm run build
+
+# Desplegar a GitHub Pages
+npm run deploy
+```
+
+## 🏗️ Estructura del Proyecto
+
+```
+travel-platform/
+├── src/
+│   ├── components/          # Componentes React
+│   │   ├── HomePage.tsx     # Página principal
+│   │   ├── ResultsPage.tsx  # Página de resultados
+│   │   ├── AdminDashboard.tsx # Panel de administración
+│   │   ├── SeasonSelector.tsx # Selector de temporadas
+│   │   └── ...
+│   ├── data/
+│   │   └── masiasDatabase.ts # Base de datos de masías
+│   └── types/
+│       └── SeasonSelector.types.ts # Tipos TypeScript
+├── public/                  # Archivos estáticos
+└── package.json
+```
+
+## 🎨 Componentes Principales
+
+### 🏠 HomePage
+Página principal con el selector de temporadas y navegación intuitiva.
+
+### 🔍 ResultsPage  
+Muestra las masías filtradas con información detallada y opciones de reserva.
+
+### 👨‍💼 AdminDashboard
+Panel de administración para gestionar masías, usuarios y reservas.
+
+### 🌤️ SeasonSelector
+Componente elegante para seleccionar la temporada de viaje.
+
+## 📊 Base de Datos
+
+La aplicación incluye una base de datos local con masías reales de Cataluña, incluyendo:
+- Información detallada de cada masía
+- Servicios disponibles
+- Ubicación y contacto
+- Fotos y descripciones
+- Precios y disponibilidad
+
+## 🎯 Funcionalidades Destacadas
+
+### 🌤️ Selección Inteligente de Temporadas
+- Interfaz visual atractiva
+- Información específica por temporada
+- Recomendaciones personalizadas
+
+### 🔍 Sistema de Filtros
+- Filtrado por características
+- Búsqueda por ubicación
+- Filtros de precio y servicios
+
+### 📱 Experiencia Mobile-First
+- Diseño responsive completo
+- Navegación táctil optimizada
+- Carga rápida en dispositivos móviles
+
+## 🚀 Despliegue
+
+La aplicación está configurada para desplegarse automáticamente en GitHub Pages:
 
 ```bash
-npm install
-npm start
+# Desplegar a producción
+npm run deploy
 ```
 
-## 🎯 Uso del Componente
+**URL de Producción**: https://mozartmorales.github.io/travel-platform
 
-```tsx
-import SeasonSelector from './components/SeasonSelector';
+## 🔧 Configuración de Desarrollo
 
-function App() {
-  const handleSeasonSelect = (season: string) => {
-    console.log('Estación seleccionada:', season);
-  };
-
-  const handleContinue = () => {
-    console.log('Continuando...');
-  };
-
-  return (
-    <SeasonSelector
-      currentStep={1}
-      totalSteps={5}
-      onSeasonSelect={handleSeasonSelect}
-      onContinue={handleContinue}
-      title="¿Cuándo quieres viajar?"
-      subtitle="Elige la estación ideal para tu escapada"
-    />
-  );
-}
+### Variables de Entorno
+```bash
+# Crear archivo .env.local para configuraciones locales
+REACT_APP_API_URL=your_api_url
+REACT_APP_ENVIRONMENT=development
 ```
 
-## 🔧 Props Disponibles
-
-| Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
-| `currentStep` | `number` | `1` | Paso actual del proceso |
-| `totalSteps` | `number` | `5` | Total de pasos en el proceso |
-| `onSeasonSelect` | `(season: string) => void` | - | Callback cuando se selecciona una estación |
-| `onContinue` | `() => void` | - | Callback cuando se presiona continuar |
-| `onBack` | `() => void` | - | Callback cuando se presiona atrás |
-| `title` | `string` | `"Quando você quer viajar?"` | Título principal |
-| `subtitle` | `string` | `"Escolha a estação ideal para sua escapada"` | Subtítulo |
-| `continueText` | `string` | `"Continuar"` | Texto del botón continuar |
-
-## 🎨 Estaciones Disponibles
-
-- **Primavera**: Flores y clima ameno
-- **Verano**: Sol y piscinas  
-- **Otoño**: Vendimia y colores
-- **Invierno**: Chimenea y acogida
-
-## 🛠️ Tecnologías Utilizadas
-
-- React 18
-- TypeScript
-- Styled Components
-- Lucide React (iconos)
-
-## 📱 Características del Diseño
-
-- Barra de progreso animada
-- Tarjetas seleccionables con hover effects
-- Iconos coloridos para cada estación
-- Botón de continuar con animación
-- Diseño mobile-first
-- Paleta de colores verde suave
-
-## 🔄 Estado del Componente
-
-El componente maneja internamente:
-- Estación seleccionada
-- Estados de hover
-- Animaciones de transición
-
-## 📝 Próximos Pasos
-
-- [ ] Añadir más idiomas
-- [ ] Temas de colores personalizables
-- [ ] Animaciones más avanzadas
-- [ ] Integración con formularios
-- [ ] Tests unitarios
+### Scripts Disponibles
+- `npm start` - Servidor de desarrollo
+- `npm build` - Build de producción
+- `npm test` - Ejecutar tests
+- `npm run deploy` - Desplegar a GitHub Pages
 
 ## 🤝 Contribuir
 
 1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
+2. Crea una rama para tu feature (`git checkout -b feature/NuevaFuncionalidad`)
+3. Commit tus cambios (`git commit -m 'Añadir nueva funcionalidad'`)
+4. Push a la rama (`git push origin feature/NuevaFuncionalidad`)
 5. Abre un Pull Request
+
+## 📝 Roadmap
+
+### Próximas Funcionalidades
+- [ ] Sistema de reservas online
+- [ ] Integración con APIs de pago
+- [ ] Sistema de reviews y calificaciones
+- [ ] Chat en tiempo real
+- [ ] App móvil nativa
+- [ ] Integración con Google Maps
+- [ ] Sistema de notificaciones
+
+### Mejoras Técnicas
+- [ ] Tests unitarios completos
+- [ ] Optimización de rendimiento
+- [ ] PWA (Progressive Web App)
+- [ ] SEO avanzado
+- [ ] Analytics y métricas
 
 ## 📄 Licencia
 
-Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
+Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para más detalles.
+
+## 📞 Contacto
+
+- **Desarrollador**: Mozart Morales
+- **Email**: [tu-email@ejemplo.com]
+- **GitHub**: [@mozartmorales](https://github.com/mozartmorales)
+
+---
+
+**¡Descubre las masías más auténticas de Cataluña con Travel Platform!** 🏠✨
