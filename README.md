@@ -1,46 +1,109 @@
-# Getting Started with Create React App
+# Travel Platform - Season Selector Component
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Un componente moderno y elegante para selección de estaciones de viaje, construido con React, TypeScript y styled-components.
 
-## Available Scripts
+## 🚀 Características
 
-In the project directory, you can run:
+- **Diseño Moderno**: Interfaz limpia y atractiva con gradientes y animaciones suaves
+- **Totalmente Responsive**: Se adapta a diferentes tamaños de pantalla
+- **TypeScript**: Tipado completo para mejor desarrollo y mantenimiento
+- **Personalizable**: Props para personalizar textos, colores y comportamiento
+- **Accesible**: Navegación por teclado y semántica HTML correcta
+- **Iconos**: Iconos hermosos de Lucide React para cada estación
 
-### `npm start`
+## 📦 Instalación
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```bash
+npm install
+npm start
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## 🎯 Uso del Componente
 
-### `npm test`
+```tsx
+import SeasonSelector from './components/SeasonSelector';
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+function App() {
+  const handleSeasonSelect = (season: string) => {
+    console.log('Estación seleccionada:', season);
+  };
 
-### `npm run build`
+  const handleContinue = () => {
+    console.log('Continuando...');
+  };
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+  return (
+    <SeasonSelector
+      currentStep={1}
+      totalSteps={5}
+      onSeasonSelect={handleSeasonSelect}
+      onContinue={handleContinue}
+      title="¿Cuándo quieres viajar?"
+      subtitle="Elige la estación ideal para tu escapada"
+    />
+  );
+}
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 🔧 Props Disponibles
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `currentStep` | `number` | `1` | Paso actual del proceso |
+| `totalSteps` | `number` | `5` | Total de pasos en el proceso |
+| `onSeasonSelect` | `(season: string) => void` | - | Callback cuando se selecciona una estación |
+| `onContinue` | `() => void` | - | Callback cuando se presiona continuar |
+| `onBack` | `() => void` | - | Callback cuando se presiona atrás |
+| `title` | `string` | `"Quando você quer viajar?"` | Título principal |
+| `subtitle` | `string` | `"Escolha a estação ideal para sua escapada"` | Subtítulo |
+| `continueText` | `string` | `"Continuar"` | Texto del botón continuar |
 
-### `npm run eject`
+## 🎨 Estaciones Disponibles
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+- **Primavera**: Flores y clima ameno
+- **Verano**: Sol y piscinas  
+- **Otoño**: Vendimia y colores
+- **Invierno**: Chimenea y acogida
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 🛠️ Tecnologías Utilizadas
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+- React 18
+- TypeScript
+- Styled Components
+- Lucide React (iconos)
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## 📱 Características del Diseño
 
-## Learn More
+- Barra de progreso animada
+- Tarjetas seleccionables con hover effects
+- Iconos coloridos para cada estación
+- Botón de continuar con animación
+- Diseño mobile-first
+- Paleta de colores verde suave
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🔄 Estado del Componente
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+El componente maneja internamente:
+- Estación seleccionada
+- Estados de hover
+- Animaciones de transición
+
+## 📝 Próximos Pasos
+
+- [ ] Añadir más idiomas
+- [ ] Temas de colores personalizables
+- [ ] Animaciones más avanzadas
+- [ ] Integración con formularios
+- [ ] Tests unitarios
+
+## 🤝 Contribuir
+
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
