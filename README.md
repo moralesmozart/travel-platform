@@ -164,12 +164,6 @@ REACT_APP_ENVIRONMENT=development
 
 Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para más detalles.
 
-## 📞 Contacto
-
-- **Desarrollador**: Mozart Morales
-- **Email**: [tu-email@ejemplo.com]
-- **GitHub**: [@mozartmorales](https://github.com/mozartmorales)
-
 ---
 
 **¡Descubre las masías más auténticas de Cataluña con Travel Platform!** 🏠✨
