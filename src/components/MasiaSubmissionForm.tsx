@@ -466,16 +466,40 @@ const countries = [
   { code: 'VE', flag: '🇻🇪', dialCode: '+58', name: 'Venezuela' },
 ];
 
-// Función para validar email
+// Función para validar email con regex más estricto
 const validateEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
+  // Regex más estricto que previene inyecciones
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailRegex.test(email) && email.length <= 254;
 };
 
-// Función para validar teléfono
+// Función para validar teléfono con regex más estricto
 const validatePhone = (phone: string): boolean => {
-  const phoneRegex = /^\+?[\d\s\-\(\)]+$/;
-  return phoneRegex.test(phone) && phone.length >= 8;
+  // Limpiar el teléfono de caracteres especiales
+  const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+  // Validar formato internacional o nacional español
+  const phoneRegex = /^(\+34|34)?[6789]\d{8}$/;
+  return phoneRegex.test(cleanPhone);
+};
+
+// Función para sanitizar texto y prevenir XSS
+const sanitizeText = (text: string): string => {
+  return text
+    .replace(/[<>]/g, '') // Remover < y >
+    .replace(/javascript:/gi, '') // Remover javascript:
+    .replace(/on\w+=/gi, '') // Remover event handlers
+    .trim()
+    .substring(0, 1000); // Limitar longitud
+};
+
+// Función para validar URL
+const validateUrl = (url: string): boolean => {
+  try {
+    const urlObj = new URL(url);
+    return ['http:', 'https:'].includes(urlObj.protocol);
+  } catch {
+    return false;
+  }
 };
 
 // Función para simular búsqueda de direcciones
@@ -574,6 +598,16 @@ const MasiaSubmissionForm: React.FC<MasiaSubmissionFormProps> = ({ onBack, onSub
   const [showAddressDropdown, setShowAddressDropdown] = useState(false);
 
   const handleInputChange = (field: string, value: any) => {
+    // Sanitizar texto para campos de texto
+    if (typeof value === 'string' && ['name', 'description', 'location'].includes(field)) {
+      value = sanitizeText(value);
+    }
+    
+    // Validar URL
+    if (field === 'url' && value && !validateUrl(value)) {
+      return; // No actualizar si la URL no es válida
+    }
+    
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -628,9 +662,35 @@ const MasiaSubmissionForm: React.FC<MasiaSubmissionFormProps> = ({ onBack, onSub
   };
 
   const handleSubmit = () => {
-    const masiaData = {
+    // Validaciones adicionales de seguridad
+    if (!validateEmail(formData.ownerEmail)) {
+      alert('Por favor, introduce un email válido');
+      return;
+    }
+    
+    if (!validatePhone(formData.ownerPhone)) {
+      alert('Por favor, introduce un teléfono válido');
+      return;
+    }
+    
+    if (formData.url && !validateUrl(formData.url)) {
+      alert('Por favor, introduce una URL válida');
+      return;
+    }
+    
+    // Sanitizar todos los campos de texto
+    const sanitizedData = {
       ...formData,
-      id: `masia_${Date.now()}`,
+      name: sanitizeText(formData.name),
+      description: sanitizeText(formData.description),
+      location: sanitizeText(formData.location),
+      ownerName: sanitizeText(formData.ownerName),
+      ownerSurname: sanitizeText(formData.ownerSurname),
+    };
+    
+    const masiaData = {
+      ...sanitizedData,
+      id: `masia_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       price: parseFloat(formData.price) || 0,
       capacity: parseInt(formData.capacity) || 0,
       rating: parseFloat(formData.rating) || 0,
