@@ -5,7 +5,7 @@ import Navigation from './components/Navigation';
 
 function App() {
   return (
-    <Router>
+    <Router basename="/travel-platform">
       <div className="App">
         <Navigation />
       </div>

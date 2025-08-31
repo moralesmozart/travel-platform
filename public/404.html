@@ -4,34 +4,23 @@
     <meta charset="utf-8">
     <title>Travel Platform - Masías Catalanas</title>
     <script type="text/javascript">
-        // Enhanced SPA routing for GitHub Pages
+        // Simple SPA routing for GitHub Pages
         (function() {
             var l = window.location;
             var path = l.pathname;
-            var basePath = '/travel-platform';
             
-            // Check if we're on the correct base path
-            if (path.startsWith(basePath)) {
-                // Extract the route after the base path
-                var route = path.replace(basePath, '');
-                
-                // If route is empty or just '/', redirect to base
-                if (!route || route === '/') {
-                    l.replace(l.protocol + '//' + l.hostname + basePath + '/');
-                    return;
-                }
-                
-                // For valid routes, redirect to base with route as query parameter
-                l.replace(
-                    l.protocol + '//' + l.hostname + basePath + '/?route=' + 
-                    encodeURIComponent(route) + 
-                    (l.search ? '&' + l.search.slice(1) : '') + 
-                    l.hash
-                );
-            } else {
-                // If not on base path, redirect to base
-                l.replace(l.protocol + '//' + l.hostname + basePath + '/');
+            // Always redirect to the base path with the route as a query parameter
+            var route = path.replace('/travel-platform', '').replace('/', '');
+            var redirectUrl = l.protocol + '//' + l.hostname + '/travel-platform/?route=' + route;
+            
+            if (l.search) {
+                redirectUrl += '&' + l.search.slice(1);
             }
+            if (l.hash) {
+                redirectUrl += l.hash;
+            }
+            
+            l.replace(redirectUrl);
         })();
     </script>
 </head>
