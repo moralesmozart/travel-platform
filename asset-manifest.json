@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/travel-platform/static/css/main.ba257100.css",
-    "main.js": "/travel-platform/static/js/main.c326b0ea.js",
+    "main.js": "/travel-platform/static/js/main.ce65e68b.js",
     "static/js/453.05b6d40c.chunk.js": "/travel-platform/static/js/453.05b6d40c.chunk.js",
     "index.html": "/travel-platform/index.html",
     "main.ba257100.css.map": "/travel-platform/static/css/main.ba257100.css.map",
-    "main.c326b0ea.js.map": "/travel-platform/static/js/main.c326b0ea.js.map",
+    "main.ce65e68b.js.map": "/travel-platform/static/js/main.ce65e68b.js.map",
     "453.05b6d40c.chunk.js.map": "/travel-platform/static/js/453.05b6d40c.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.ba257100.css",
-    "static/js/main.c326b0ea.js"
+    "static/js/main.ce65e68b.js"
   ]
 }
