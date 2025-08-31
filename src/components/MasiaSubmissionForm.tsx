@@ -644,11 +644,7 @@ const MasiaSubmissionForm: React.FC<MasiaSubmissionFormProps> = ({ onBack, onSub
   const [showAddressDropdown, setShowAddressDropdown] = useState(false);
 
   const handleInputChange = (field: string, value: any) => {
-    // Sanitizar texto para campos de texto
-    if (typeof value === 'string' && ['name', 'description', 'location'].includes(field)) {
-      value = sanitizeText(value);
-    }
-    
+    // No sanitizar durante el input, solo al enviar
     // Validar URL
     if (field === 'url' && value && !validateUrl(value)) {
       return; // No actualizar si la URL no es válida
@@ -778,7 +774,10 @@ const MasiaSubmissionForm: React.FC<MasiaSubmissionFormProps> = ({ onBack, onSub
 
   // Función para validar email en tiempo real
   const handleEmailChange = (email: string) => {
-    handleInputChange('ownerEmail', email);
+    setFormData(prev => ({
+      ...prev,
+      ownerEmail: email
+    }));
     if (email && !validateEmail(email)) {
       setEmailError('Por favor, introduce un email válido');
     } else {
@@ -790,7 +789,10 @@ const MasiaSubmissionForm: React.FC<MasiaSubmissionFormProps> = ({ onBack, onSub
   const handlePhoneChange = (phone: string) => {
     // Solo permitir números, +, espacios, guiones y paréntesis
     const cleanPhone = phone.replace(/[^\d\s\+\-\(\)]/g, '');
-    handleInputChange('ownerPhone', cleanPhone);
+    setFormData(prev => ({
+      ...prev,
+      ownerPhone: cleanPhone
+    }));
     
     if (cleanPhone && !validatePhone(cleanPhone)) {
       setPhoneError('Por favor, introduce un teléfono válido');
@@ -802,7 +804,10 @@ const MasiaSubmissionForm: React.FC<MasiaSubmissionFormProps> = ({ onBack, onSub
   // Función para manejar búsqueda de direcciones
   const handleAddressSearch = async (query: string) => {
     setAddressQuery(query);
-    handleInputChange('location', query);
+    setFormData(prev => ({
+      ...prev,
+      location: query
+    }));
     
     if (query.length >= 3) {
       const suggestions = await searchAddresses(query);
@@ -817,7 +822,10 @@ const MasiaSubmissionForm: React.FC<MasiaSubmissionFormProps> = ({ onBack, onSub
   // Función para seleccionar dirección
   const handleAddressSelect = (address: any) => {
     setAddressQuery(address.fullAddress);
-    handleInputChange('location', address.fullAddress);
+    setFormData(prev => ({
+      ...prev,
+      location: address.fullAddress
+    }));
     setShowAddressDropdown(false);
   };
 
