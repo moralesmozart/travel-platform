@@ -51,31 +51,6 @@
     <noscript>Necesitas habilitar JavaScript para usar esta aplicación.</noscript>
     <div id="root"></div>
     
-    <!-- Simple SPA routing script -->
-    <script type="text/javascript">
-      // Handle route redirection from 404.html
-      (function() {
-        var l = window.location;
-        var searchParams = new URLSearchParams(l.search);
-        var route = searchParams.get('route');
-        
-        if (route) {
-          // Remove the route parameter
-          searchParams.delete('route');
-          var newSearch = searchParams.toString();
-          var newUrl = l.pathname + (newSearch ? '?' + newSearch : '') + l.hash;
-          
-          // Update the URL without reloading the page
-          window.history.replaceState(null, null, newUrl);
-          
-          // Trigger navigation event for React Router
-          if (route) {
-            window.dispatchEvent(new CustomEvent('routeChange', { 
-              detail: { route: '/' + route } 
-            }));
-          }
-        }
-      })();
-    </script>
+
   </body>
 </html>

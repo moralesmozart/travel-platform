@@ -28,21 +28,7 @@ const Navigation: React.FC = () => {
     return localStorage.getItem('adminLoggedIn') === 'true';
   });
 
-  // Handle route changes from 404.html redirect
-  useEffect(() => {
-    const handleRouteChange = (event: CustomEvent) => {
-      const route = event.detail.route;
-      if (route) {
-        navigate(route);
-      }
-    };
 
-    window.addEventListener('routeChange', handleRouteChange as EventListener);
-    
-    return () => {
-      window.removeEventListener('routeChange', handleRouteChange as EventListener);
-    };
-  }, [navigate]);
 
   const handleFindMasia = () => {
     navigate('/quiz');
