@@ -248,16 +248,61 @@ const CheckboxGroup = styled.div`
 const CheckboxItem = styled.label`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   cursor: pointer;
   font-size: 0.9rem;
   color: #2c3e50;
+  padding: 12px;
+  border: 2px solid #e8e8e8;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  background: white;
+  
+  &:hover {
+    border-color: #4CAF50;
+    background: #f8fff8;
+  }
+  
+  &.checked {
+    border-color: #4CAF50;
+    background: #f0fff0;
+  }
 `;
 
-const Checkbox = styled.input`
-  width: 16px;
-  height: 16px;
-  accent-color: #4CAF50;
+const CustomCheckbox = styled.div<{ checked: boolean }>`
+  width: 20px;
+  height: 20px;
+  border: 2px solid ${props => props.checked ? '#4CAF50' : '#e8e8e8'};
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: ${props => props.checked ? '#4CAF50' : 'white'};
+  transition: all 0.2s ease;
+  
+  &:hover {
+    border-color: #4CAF50;
+  }
+`;
+
+const CheckboxIcon = styled.div<{ checked: boolean }>`
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  opacity: ${props => props.checked ? 1 : 0};
+  transition: opacity 0.2s ease;
+`;
+
+const CheckboxText = styled.span`
+  flex: 1;
+  font-weight: 500;
+`;
+
+const CheckboxError = styled.div`
+  color: #e74c3c;
+  font-size: 0.8rem;
+  margin-top: 8px;
+  grid-column: 1 / -1;
 `;
 
 const ImagePreview = styled.div`
@@ -488,7 +533,6 @@ const sanitizeText = (text: string): string => {
     .replace(/[<>]/g, '') // Remover < y >
     .replace(/javascript:/gi, '') // Remover javascript:
     .replace(/on\w+=/gi, '') // Remover event handlers
-    .replace(/\s+/g, ' ') // Normalizar espacios múltiples a uno solo
     .trim()
     .substring(0, 1000); // Limitar longitud
 };
@@ -588,6 +632,7 @@ const MasiaSubmissionForm: React.FC<MasiaSubmissionFormProps> = ({ onBack, onSub
   // Estados para validación
   const [emailError, setEmailError] = useState('');
   const [phoneError, setPhoneError] = useState('');
+  const [checkboxError, setCheckboxError] = useState('');
   
   // Estados para selector de país
   const [selectedCountry, setSelectedCountry] = useState(countries[0]);
@@ -783,11 +828,17 @@ const MasiaSubmissionForm: React.FC<MasiaSubmissionFormProps> = ({ onBack, onSub
   };
 
   const isFormValid = () => {
+    const hasAtLeastOneSpecialFeature = formData.petFriendly || 
+                                       formData.familyFriendly || 
+                                       formData.romantic || 
+                                       formData.groupFriendly;
+    
     return formData.ownerName && 
            formData.ownerEmail && 
            validateEmail(formData.ownerEmail) &&
            formData.name && 
-           formData.location;
+           formData.location &&
+           hasAtLeastOneSpecialFeature;
   };
 
   return (
@@ -1110,61 +1161,75 @@ const MasiaSubmissionForm: React.FC<MasiaSubmissionFormProps> = ({ onBack, onSub
         <FormGroup>
           <Label>Temporada</Label>
           <CheckboxGroup>
-            {['Primavera', 'Verano', 'Otoño', 'Invierno'].map((season) => (
-              <CheckboxItem key={season}>
-                <Checkbox
-                  type="checkbox"
-                  checked={formData.seasonality.includes(season)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      handleInputChange('seasonality', [...formData.seasonality, season]);
-                    } else {
-                      handleInputChange('seasonality', formData.seasonality.filter(s => s !== season));
-                    }
-                  }}
-                />
-                {season}
+            {[
+              { name: 'Primavera', emoji: '🌸' },
+              { name: 'Verano', emoji: '☀️' },
+              { name: 'Otoño', emoji: '🍂' },
+              { name: 'Invierno', emoji: '❄️' }
+            ].map((season) => (
+              <CheckboxItem 
+                key={season.name}
+                className={formData.seasonality.includes(season.name) ? 'checked' : ''}
+                onClick={() => {
+                  if (formData.seasonality.includes(season.name)) {
+                    handleInputChange('seasonality', formData.seasonality.filter(s => s !== season.name));
+                  } else {
+                    handleInputChange('seasonality', [...formData.seasonality, season.name]);
+                  }
+                }}
+              >
+                <CustomCheckbox checked={formData.seasonality.includes(season.name)}>
+                  <CheckboxIcon checked={formData.seasonality.includes(season.name)}>✓</CheckboxIcon>
+                </CustomCheckbox>
+                <CheckboxText>{season.emoji} {season.name}</CheckboxText>
               </CheckboxItem>
             ))}
           </CheckboxGroup>
         </FormGroup>
 
         <FormGroup>
-          <Label>Características Especiales</Label>
+          <Label>Características Especiales *</Label>
           <CheckboxGroup>
-            <CheckboxItem>
-              <Checkbox
-                type="checkbox"
-                checked={formData.petFriendly}
-                onChange={(e) => handleInputChange('petFriendly', e.target.checked)}
-              />
-              Pet Friendly
+            <CheckboxItem 
+              className={formData.petFriendly ? 'checked' : ''}
+              onClick={() => handleInputChange('petFriendly', !formData.petFriendly)}
+            >
+              <CustomCheckbox checked={formData.petFriendly}>
+                <CheckboxIcon checked={formData.petFriendly}>✓</CheckboxIcon>
+              </CustomCheckbox>
+              <CheckboxText>🐕 Pet Friendly</CheckboxText>
             </CheckboxItem>
-            <CheckboxItem>
-              <Checkbox
-                type="checkbox"
-                checked={formData.familyFriendly}
-                onChange={(e) => handleInputChange('familyFriendly', e.target.checked)}
-              />
-              Familiar
+            <CheckboxItem 
+              className={formData.familyFriendly ? 'checked' : ''}
+              onClick={() => handleInputChange('familyFriendly', !formData.familyFriendly)}
+            >
+              <CustomCheckbox checked={formData.familyFriendly}>
+                <CheckboxIcon checked={formData.familyFriendly}>✓</CheckboxIcon>
+              </CustomCheckbox>
+              <CheckboxText>👨‍👩‍👧‍👦 Familiar</CheckboxText>
             </CheckboxItem>
-            <CheckboxItem>
-              <Checkbox
-                type="checkbox"
-                checked={formData.romantic}
-                onChange={(e) => handleInputChange('romantic', e.target.checked)}
-              />
-              Romántico
+            <CheckboxItem 
+              className={formData.romantic ? 'checked' : ''}
+              onClick={() => handleInputChange('romantic', !formData.romantic)}
+            >
+              <CustomCheckbox checked={formData.romantic}>
+                <CheckboxIcon checked={formData.romantic}>✓</CheckboxIcon>
+              </CustomCheckbox>
+              <CheckboxText>💕 Romántico</CheckboxText>
             </CheckboxItem>
-            <CheckboxItem>
-              <Checkbox
-                type="checkbox"
-                checked={formData.groupFriendly}
-                onChange={(e) => handleInputChange('groupFriendly', e.target.checked)}
-              />
-              Grupos
+            <CheckboxItem 
+              className={formData.groupFriendly ? 'checked' : ''}
+              onClick={() => handleInputChange('groupFriendly', !formData.groupFriendly)}
+            >
+              <CustomCheckbox checked={formData.groupFriendly}>
+                <CheckboxIcon checked={formData.groupFriendly}>✓</CheckboxIcon>
+              </CustomCheckbox>
+              <CheckboxText>👥 Grupos</CheckboxText>
             </CheckboxItem>
           </CheckboxGroup>
+          {!formData.petFriendly && !formData.familyFriendly && !formData.romantic && !formData.groupFriendly && (
+            <CheckboxError>⚠️ Debes seleccionar al menos una característica especial</CheckboxError>
+          )}
         </FormGroup>
       </Section>
     </EditorGrid>
