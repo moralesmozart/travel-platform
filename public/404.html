@@ -4,26 +4,42 @@
     <meta charset="utf-8">
     <title>Travel Platform - Masías Catalanas</title>
     <script type="text/javascript">
-        // Single Page Apps for GitHub Pages
-        // MIT License
-        // https://github.com/rafgraph/spa-github-pages
-        // This script takes the current url and converts the path and query
-        // string into just a query string, and then redirects the browser
-        // to the new url with only a query string and hash fragment.
-        var pathSegmentsToKeep = 1;
-
-        var l = window.location;
-        l.replace(
-            l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-            l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
-            l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
-            (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
-            l.hash
-        );
+        // Enhanced SPA routing for GitHub Pages
+        (function() {
+            var l = window.location;
+            var path = l.pathname;
+            var basePath = '/travel-platform';
+            
+            // Check if we're on the correct base path
+            if (path.startsWith(basePath)) {
+                // Extract the route after the base path
+                var route = path.replace(basePath, '');
+                
+                // If route is empty or just '/', redirect to base
+                if (!route || route === '/') {
+                    l.replace(l.protocol + '//' + l.hostname + basePath + '/');
+                    return;
+                }
+                
+                // For valid routes, redirect to base with route as query parameter
+                l.replace(
+                    l.protocol + '//' + l.hostname + basePath + '/?route=' + 
+                    encodeURIComponent(route) + 
+                    (l.search ? '&' + l.search.slice(1) : '') + 
+                    l.hash
+                );
+            } else {
+                // If not on base path, redirect to base
+                l.replace(l.protocol + '//' + l.hostname + basePath + '/');
+            }
+        })();
     </script>
 </head>
 <body>
     <!-- This page is used for SPA routing on GitHub Pages -->
-    <p>Redirigiendo...</p>
+    <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+        <h2>Redirigiendo...</h2>
+        <p>Si no eres redirigido automáticamente, <a href="/travel-platform/">haz clic aquí</a></p>
+    </div>
 </body>
 </html>
