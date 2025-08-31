@@ -33,7 +33,7 @@ Travel Platform es una aplicación web completa que conecta viajeros con las mas
 ### Instalación Local
 ```bash
 # Clonar el repositorio
-git clone https://github.com/moralesmozart/travel-platform.git
+git clone https://github.com/masiaconnect/travel-platform.git
 cd travel-platform
 
 # Instalar dependencias
