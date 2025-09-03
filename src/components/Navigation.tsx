@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation, Navigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import HomePage from './HomePage';
 import SeasonSelector from './SeasonSelector';
@@ -7,10 +7,21 @@ import ResultsPage from './ResultsPage';
 import AdminLogin from './AdminLogin';
 import AdminDashboard from './AdminDashboard';
 import MasiaSubmissionForm from './MasiaSubmissionForm';
+
 import { filterMasiasByPreferences, addMasiaToDatabase } from '../data/masiasDatabase';
 import { validateAdminCredentials } from '../config/auth';
 import { loginRateLimiter } from '../utils/rateLimiter';
 import RateLimitMonitor from './RateLimitMonitor';
+
+// Styled Components for Navigation Bar
+
+
+
+
+
+
+
+
 
 
 const NavigationContainer = styled.div`
@@ -141,21 +152,16 @@ const Navigation: React.FC = () => {
     navigate('/');
   };
 
-  const handleMasiaSubmission = (masiaData: any) => {
-    // Agregar la masia a la base de datos como pendiente
-    addMasiaToDatabase({
-      ...masiaData,
-      status: 'pending',
-      submittedBy: `${masiaData.ownerName} ${masiaData.ownerSurname}`,
-      submittedAt: new Date().toISOString()
-    });
-    
+  const handleMasiaSubmission = async (masiaData: any) => {
+    // La masía ya se guardó en Supabase desde el formulario
+    // Solo navegar de vuelta al inicio
     alert('¡Tu masia ha sido enviada para aprobación! Te contactaremos pronto.');
     navigate('/');
   };
 
   return (
     <NavigationContainer>
+
       <Routes>
         {/* Ruta principal */}
         <Route path="/" element={
@@ -186,6 +192,13 @@ const Navigation: React.FC = () => {
             onNewSearch={handleNewSearch}
             onBookNow={handleBookNow}
             resultsCount={6}
+            preferences={{
+              seasons: allSelections[1],
+              experiences: allSelections[2],
+              companions: allSelections[3],
+              duration: allSelections[4]?.[0],
+              budget: allSelections[5]?.[0]
+            }}
           />
         } />
         
@@ -216,6 +229,8 @@ const Navigation: React.FC = () => {
             <Navigate to="/admin/login" replace />
           )
         } />
+
+
         
         {/* Ruta por defecto */}
         <Route path="*" element={<Navigate to="/" replace />} />

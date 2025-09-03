@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { Search, AlertTriangle, HelpCircle, Calendar, BookOpen, TrendingUp, TreePine, Wine, Heart, Plus, Settings } from 'lucide-react';
+import { testSupabaseConnection, checkEnvironmentVariables } from '../utils/testSupabase';
+import { verifySupabaseSetup, verifyProductionSetup } from '../utils/verifySupabase';
+import { debugSupabaseData } from '../utils/debugSupabase';
+import { simpleSupabaseTest } from '../utils/simpleTest';
 
 // Styled Components
 const HomeContainer = styled.div`
@@ -32,6 +36,8 @@ const AdminButton = styled.button`
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 `;
+
+
 
 // Hero Section
 const HeroSection = styled.section`
@@ -775,6 +781,45 @@ interface SolutionFeature {
 }
 
 const HomePage: React.FC<HomePageProps> = ({ onFindMasia, onAdminLogin, onSubmitMasia }) => {
+  // Probar conexión con Supabase al cargar el componente
+  useEffect(() => {
+    const testConnection = async () => {
+      console.log('🚀 Iniciando verificación completa de Supabase...');
+      
+      // Verificar configuración de producción
+      const productionInfo = verifyProductionSetup();
+      
+      // Verificar variables de entorno
+      const envOk = checkEnvironmentVariables();
+      if (!envOk) {
+        console.error('❌ Variables de entorno no configuradas correctamente');
+        return;
+      }
+      
+      // Verificación completa de Supabase
+      const verification = await verifySupabaseSetup();
+      if (verification.success) {
+        console.log('🎉 ¡Todo listo! Supabase está funcionando correctamente');
+        console.log('📊 Resumen:', verification.stats);
+      } else {
+        console.error('❌ Error en la verificación de Supabase:', verification.error);
+      }
+      
+      // Prueba simple primero
+      console.log('🧪 Ejecutando prueba simple...');
+      const simpleTestResult = await simpleSupabaseTest();
+      
+      if (simpleTestResult) {
+        // Diagnóstico detallado
+        console.log('🔍 Ejecutando diagnóstico detallado...');
+        await debugSupabaseData();
+      } else {
+        console.log('❌ Prueba simple falló, saltando diagnóstico detallado');
+      }
+    };
+    
+    testConnection();
+  }, []);
   const handleFindMasia = () => {
     console.log('Buscar Masia clicked');
     onFindMasia?.();
@@ -782,10 +827,11 @@ const HomePage: React.FC<HomePageProps> = ({ onFindMasia, onAdminLogin, onSubmit
 
   const handleAdminLogin = () => {
     console.log('Admin Login clicked');
-    onAdminLogin?.();
+    // Navegar usando HashRouter
+    window.location.href = '/travel-platform/#/admin/login';
   };
 
-  return (
+    return (
     <HomeContainer>
       <AdminButton onClick={handleAdminLogin}>
         <Settings size={14} />

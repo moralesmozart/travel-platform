@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { 
   LogOut, 
@@ -11,7 +11,8 @@ import {
   Home,
   AlertTriangle
 } from 'lucide-react';
-import { Masia, updateMasiaInDatabase, masiasDatabase } from '../data/masiasDatabase';
+import { Masia, updateMasiaInDatabase } from '../data/masiasDatabase';
+import { masiasDB } from '../config/supabase';
 import MasiaEditor from './MasiaEditor';
 
 interface AdminDashboardProps {
@@ -377,94 +378,42 @@ const ContactButton = styled.button`
   }
 `;
 
-// Datos de ejemplo para masias pendientes
-const pendingMasias: PendingMasia[] = [
-  {
-    id: 'pending-1',
-    name: 'Masia Can Nou - Vista Panorámica',
-    location: 'Girona, 1h 15min de Barcelona',
-    price: 140,
-    description: 'Nueva masia con vistas espectaculares a los Pirineos. Ideal para familias que buscan tranquilidad y naturaleza.',
-    recommendations: ['Vistas panorámicas', 'Jardín privado', 'Cocina equipada'],
-    rating: 0,
-    capacity: 6,
-    features: ['WiFi', 'Aparcamiento'],
-    image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-    url: 'https://masias-catalunya.com/can-nou',
-    amenities: ['WiFi', 'Aparcamiento', 'Jardín', 'Terraza'],
-    activities: ['Senderismo', 'Bicicleta', 'Observación de aves'],
-    seasonality: ['Primavera', 'Verano', 'Otoño'],
-    petFriendly: true,
-    familyFriendly: true,
-    romantic: false,
-    groupFriendly: true,
-    status: 'pending',
-    submittedBy: 'maria.garcia@email.com',
-    submittedAt: '2024-01-15T10:30:00Z',
-    ownerName: 'María',
-    ownerSurname: 'García',
-    ownerEmail: 'maria.garcia@email.com',
-    ownerPhone: '+34 600 123 456'
-  },
-  {
-    id: 'pending-2',
-    name: 'Masia El Rincón - Romance Rural',
-    location: 'Tarragona, 45min de Barcelona',
-    price: 180,
-    description: 'Masía romántica perfecta para parejas. Ambiente íntimo con chimenea y terraza privada.',
-    recommendations: ['Ambiente romántico', 'Chimenea', 'Terraza privada'],
-    rating: 0,
-    capacity: 2,
-    features: ['Jacuzzi', 'Terraza privada'],
-    image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2064&q=80',
-    url: 'https://masias-catalunya.com/el-rincon',
-    amenities: ['Jacuzzi', 'Terraza privada', 'Chimenea', 'WiFi'],
-    activities: ['Masajes', 'Yoga', 'Cenas románticas'],
-    seasonality: ['Primavera', 'Verano', 'Otoño', 'Invierno'],
-    petFriendly: false,
-    familyFriendly: false,
-    romantic: true,
-    groupFriendly: false,
-    status: 'pending',
-    submittedBy: 'carlos.lopez@email.com',
-    submittedAt: '2024-01-14T15:45:00Z',
-    ownerName: 'Carlos',
-    ownerSurname: 'López',
-    ownerEmail: 'carlos.lopez@email.com',
-    ownerPhone: '+34 600 789 012'
-  }
-];
+// Los datos ahora vienen completamente de Supabase
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onBack }) => {
   const [activeTab, setActiveTab] = useState<'total' | 'pending' | 'approved' | 'rejected'>('total');
-  
-  // Combinar masias de la base de datos con las pendientes de ejemplo
-  const allMasias: PendingMasia[] = [
-    ...pendingMasias, // Datos de ejemplo
-    // Las masias de la base de datos principal que no tienen status se consideran como aprobadas
-    ...masiasDatabase
-      .filter(masia => !masia.status || masia.status === 'approved')
-      .map(masia => ({
-        ...masia,
-        status: (masia.status as 'approved') || 'approved',
-        submittedBy: masia.submittedBy || 'Sistema',
-        submittedAt: masia.submittedAt || new Date().toISOString()
-      })),
-    // Agregar masias pendientes de la base de datos
-    ...masiasDatabase
-      .filter(masia => masia.status === 'pending')
-      .map(masia => ({
-        ...masia,
-        status: 'pending' as const,
-        submittedBy: masia.submittedBy || 'Usuario',
-        submittedAt: masia.submittedAt || new Date().toISOString()
-      }))
-  ];
-  
-  const [masias, setMasias] = useState<PendingMasia[]>(allMasias);
+  const [masias, setMasias] = useState<PendingMasia[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Cargar masías desde Supabase
+  useEffect(() => {
+    const loadMasias = async () => {
+      try {
+        setLoading(true);
+        const allMasiasFromDB = await masiasDB.getAllMasias();
+        console.log('📊 Masías cargadas desde Supabase en AdminDashboard:', allMasiasFromDB.length);
+        
+        const processedMasias = allMasiasFromDB.map(masia => ({
+          ...masia,
+          status: masia.status || 'approved',
+          submittedBy: masia.submittedBy || 'Sistema',
+          submittedAt: masia.submittedAt || new Date().toISOString()
+        }));
+        
+        setMasias(processedMasias);
+      } catch (error) {
+        console.error('❌ Error loading masias from Supabase:', error);
+        setMasias([]); // Sin fallback a datos de ejemplo
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadMasias();
+  }, []);
   const [editingMasia, setEditingMasia] = useState<Masia | null>(null);
 
-  const handleApprove = (masiaId: string) => {
+  const handleApprove = async (masiaId: string) => {
     // Encontrar la masía pendiente
     const masiaToUpdate = masias.find(m => m.id === masiaId);
     if (masiaToUpdate) {
@@ -520,19 +469,22 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onBack }) => 
         ownerPhone: masiaToUpdate.ownerPhone?.trim() || ''
       };
       
-      // Actualizar en la base de datos
-      updateMasiaInDatabase(processedMasia);
+      // Actualizar en Supabase
+      const success = await updateMasiaInDatabase(processedMasia);
       
-      // Actualizar en el estado local
-      setMasias(prev => prev.map(masia => 
-        masia.id === masiaId ? processedMasia : masia
-      ));
-      
-      alert('Masia aprobada exitosamente. Todos los datos han sido procesados y guardados.');
+      if (success) {
+        // Actualizar en el estado local
+        setMasias(prev => prev.map(masia => 
+          masia.id === masiaId ? processedMasia : masia
+        ));
+        alert('Masia aprobada exitosamente. Todos los datos han sido procesados y guardados.');
+      } else {
+        alert('Error al aprobar la masía. Por favor, intenta de nuevo.');
+      }
     }
   };
 
-  const handleReject = (masiaId: string) => {
+  const handleReject = async (masiaId: string) => {
     // Encontrar la masía pendiente
     const masiaToUpdate = masias.find(m => m.id === masiaId);
     if (masiaToUpdate) {
@@ -588,15 +540,18 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onBack }) => 
         ownerPhone: masiaToUpdate.ownerPhone?.trim() || ''
       };
       
-      // Actualizar en la base de datos
-      updateMasiaInDatabase(processedMasia);
+      // Actualizar en Supabase
+      const success = await updateMasiaInDatabase(processedMasia);
       
-      // Actualizar en el estado local
-      setMasias(prev => prev.map(masia => 
-        masia.id === masiaId ? processedMasia : masia
-      ));
-      
-      alert('Masia rechazada. Los datos han sido procesados y guardados.');
+      if (success) {
+        // Actualizar en el estado local
+        setMasias(prev => prev.map(masia => 
+          masia.id === masiaId ? processedMasia : masia
+        ));
+        alert('Masia rechazada. Los datos han sido procesados y guardados.');
+      } else {
+        alert('Error al rechazar la masía. Por favor, intenta de nuevo.');
+      }
     }
   };
 
@@ -607,9 +562,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onBack }) => 
     }
   };
 
-  const handleSaveEdit = (updatedMasia: Masia) => {
-    // Actualizar en la base de datos
-    updateMasiaInDatabase(updatedMasia);
+  const handleSaveEdit = async (updatedMasia: Masia) => {
+    // Actualizar en Supabase
+    const success = await updateMasiaInDatabase(updatedMasia);
     
     // Actualizar en el estado local
     setMasias(prev => prev.map(masia => 
@@ -760,7 +715,13 @@ Ubicación: ${masia.location}
           </Tab>
         </TabsContainer>
 
-        {filteredMasias.length === 0 ? (
+        {loading ? (
+          <EmptyState>
+            <EmptyStateIcon>⏳</EmptyStateIcon>
+            <h3>Cargando masías desde Supabase...</h3>
+            <p>Espera un momento mientras se cargan los datos.</p>
+          </EmptyState>
+        ) : filteredMasias.length === 0 ? (
           <EmptyState>
             <EmptyStateIcon>📭</EmptyStateIcon>
             <h3>No hay masias {activeTab === 'total' ? 'en total' : activeTab === 'pending' ? 'pendientes' : activeTab === 'approved' ? 'aprobadas' : 'rechazadas'}</h3>

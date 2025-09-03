@@ -15,6 +15,7 @@
     
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="icon" type="image/png" href="%PUBLIC_URL%/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#4CAF50" />
     <meta
@@ -37,9 +38,8 @@
       style-src 'self' 'unsafe-inline' https://*.hotjar.com;
       img-src 'self' data: https: https://*.hotjar.com;
       font-src 'self' data: https://*.hotjar.com;
-      connect-src 'self' https://*.hotjar.com wss://*.hotjar.com;
+      connect-src 'self' https: wss:;
       frame-src https://*.hotjar.com;
-      frame-ancestors 'none';
     " />
     
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />

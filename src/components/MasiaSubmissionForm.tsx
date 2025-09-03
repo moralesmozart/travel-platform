@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { ArrowLeft, Save, X, Search, MapPin, Users, Settings } from 'lucide-react';
+import { addMasiaToDatabase } from '../data/masiasDatabase';
+import { testMasiaSubmission, testMasiaSubmissionWithFormData } from '../utils/testMasiaSubmission';
+import ImageUpload from './ImageUpload';
 
 interface MasiaSubmissionFormProps {
   onBack: () => void;
@@ -703,7 +706,7 @@ const MasiaSubmissionForm: React.FC<MasiaSubmissionFormProps> = ({ onBack, onSub
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Validaciones adicionales de seguridad
     if (!validateEmail(formData.ownerEmail)) {
       alert('Por favor, introduce un email válido');
@@ -766,10 +769,24 @@ const MasiaSubmissionForm: React.FC<MasiaSubmissionFormProps> = ({ onBack, onSub
       id: `masia_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       
       // Establecer estado inicial como pendiente
-      status: 'pending' as const
+      status: 'pending' as const,
+      
+      // Información de envío
+      submittedBy: `${formData.ownerName} ${formData.ownerSurname}`,
+      submittedAt: new Date().toISOString()
     };
     
-    onSubmit(processedData);
+    // Guardar en Supabase usando la función normal
+    console.log('📤 Enviando masía usando addMasiaToDatabase...');
+    const success = await addMasiaToDatabase(processedData);
+    console.log('📤 Resultado de addMasiaToDatabase:', success);
+    
+    if (success) {
+      alert('¡Masia enviada exitosamente! Será revisada por nuestro equipo.');
+      onSubmit(processedData);
+    } else {
+      alert('Error al enviar la masía. Por favor, intenta de nuevo. Revisa la consola para más detalles.');
+    }
   };
 
   // Función para validar email en tiempo real
@@ -1029,12 +1046,9 @@ const MasiaSubmissionForm: React.FC<MasiaSubmissionFormProps> = ({ onBack, onSub
             />
           </FormGroup>
           <FormGroup>
-            <Label>URL de imagen</Label>
-            <Input
-              type="url"
-              value={formData.image}
-              onChange={(e) => handleInputChange('image', e.target.value)}
-              placeholder="https://ejemplo.com/imagen.jpg"
+            <ImageUpload
+              onImageUpload={(imageUrl) => handleInputChange('image', imageUrl)}
+              currentImage={formData.image}
             />
           </FormGroup>
         </FormGrid>

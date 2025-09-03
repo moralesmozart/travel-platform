@@ -1,13 +1,21 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { ArrowLeft, MapPin, Star, Users, Car, Calendar, ExternalLink } from 'lucide-react';
-import { Masia, masiasDatabase } from '../data/masiasDatabase';
+import { Masia, filterMasiasByPreferences } from '../data/masiasDatabase';
+import { masiasDB } from '../config/supabase';
 
 interface ResultsPageProps {
   onNewSearch?: () => void;
   onBookNow?: (masiaId: string) => void;
   resultsCount?: number;
   masias?: Masia[];
+  preferences?: {
+    seasons?: string[];
+    experiences?: string[];
+    companions?: string[];
+    duration?: string;
+    budget?: string;
+  };
 }
 
 // Styled Components
@@ -259,16 +267,41 @@ const ButtonContainer = styled.div`
 `;
 
 // Usar solo masías aprobadas de la base de datos
-const sampleMasias = masiasDatabase.filter(masia => 
-  !masia.status || masia.status === 'approved'
-);
-
 const ResultsPage: React.FC<ResultsPageProps> = ({
   onNewSearch,
   onBookNow,
   resultsCount = 6,
-  masias = sampleMasias
+  masias: propMasias,
+  preferences
 }) => {
+  const [masias, setMasias] = useState<Masia[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadMasias = async () => {
+      try {
+        setLoading(true);
+        // Siempre cargar masías aprobadas desde Supabase
+        let approvedMasias = await masiasDB.getApprovedMasias();
+        console.log('📊 Masías cargadas desde Supabase:', approvedMasias.length);
+        
+        // Si hay preferencias, filtrar las masías
+        if (preferences) {
+          approvedMasias = await filterMasiasByPreferences(preferences);
+          console.log('🔍 Masías filtradas según preferencias:', approvedMasias.length);
+        }
+        
+        setMasias(approvedMasias);
+      } catch (error) {
+        console.error('❌ Error loading masias from Supabase:', error);
+        setMasias([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadMasias();
+  }, [preferences]);
   const handleNewSearch = () => {
     onNewSearch?.();
   };
@@ -277,6 +310,17 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
     onBookNow?.(masiaId);
   };
 
+  if (loading) {
+    return (
+      <Container>
+        <Content>
+          <PageTitle>Cargando masías desde Supabase...</PageTitle>
+          <PageSubtitle>Buscando las mejores opciones para ti</PageSubtitle>
+        </Content>
+      </Container>
+    );
+  }
+
   return (
     <Container>
       <Header>
@@ -284,7 +328,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
           <ArrowLeft size={20} />
           Nueva búsqueda
         </BackButton>
-        <ResultsCount>{resultsCount} masias encontradas</ResultsCount>
+        <ResultsCount>{masias.length} masias encontradas</ResultsCount>
       </Header>
 
       <Content>
@@ -293,8 +337,29 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
           Seleccionadas especialmente basadas en tus preferencias
         </PageSubtitle>
 
-        {masias.map((masia) => (
-          <MasiaCard key={masia.id}>
+        {masias.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '40px' }}>
+            <h3>No se encontraron masías</h3>
+            <p>No hay masías aprobadas disponibles en este momento.</p>
+            <button 
+              onClick={handleNewSearch}
+              style={{
+                background: '#4CAF50',
+                color: 'white',
+                border: 'none',
+                padding: '12px 24px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                marginTop: '20px'
+              }}
+            >
+              Nueva búsqueda
+            </button>
+          </div>
+        ) : (
+          <>
+            {masias.map((masia) => (
+              <MasiaCard key={masia.id}>
             <MasiaContent>
               <MasiaImage image={masia.image}>
                 <PriceContainer>
@@ -349,9 +414,11 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
                   </BookButton>
                 </ButtonContainer>
               </MasiaInfo>
-            </MasiaContent>
-          </MasiaCard>
-        ))}
+              </MasiaContent>
+            </MasiaCard>
+            ))}
+          </>
+        )}
       </Content>
     </Container>
   );
