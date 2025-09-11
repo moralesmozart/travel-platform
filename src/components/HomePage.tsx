@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { Search, AlertTriangle, HelpCircle, Calendar, BookOpen, TrendingUp, TreePine, Wine, Heart, Plus, Settings, Send } from 'lucide-react';
+import { Search, AlertTriangle, HelpCircle, Calendar, BookOpen, TrendingUp, TreePine, Wine, Heart, Plus, Send } from 'lucide-react';
 import { testSupabaseConnection, checkEnvironmentVariables } from '../utils/testSupabase';
 import { verifySupabaseSetup, verifyProductionSetup } from '../utils/verifySupabase';
 import { debugSupabaseData } from '../utils/debugSupabase';
@@ -12,30 +12,6 @@ const HomeContainer = styled.div`
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 `;
 
-const AdminButton = styled.button`
-  position: fixed;
-  top: 180px;
-  right: 20px;
-  background: rgba(255, 255, 255, 0.9);
-  border: none;
-  padding: 8px 12px;
-  border-radius: 20px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.8rem;
-  color: #667eea;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  z-index: 1001;
-  
-  &:hover {
-    background: white;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-`;
 
 // Banner Section
 const BannerSection = styled.div`
@@ -886,11 +862,6 @@ const HomePage: React.FC<HomePageProps> = ({ onFindMasia, onAdminLogin, onSubmit
     onFindMasia?.();
   };
 
-  const handleAdminLogin = () => {
-    console.log('Admin Login clicked');
-    // Navegar usando HashRouter
-    window.location.href = '/#/admin/login';
-  };
 
   const handleBannerCTA = () => {
     console.log('Banner CTA clicked - redirecting to masia submission');
@@ -900,11 +871,6 @@ const HomePage: React.FC<HomePageProps> = ({ onFindMasia, onAdminLogin, onSubmit
 
     return (
     <HomeContainer>
-      <AdminButton onClick={handleAdminLogin}>
-        <Settings size={14} />
-        Admin
-      </AdminButton>
-      
       {/* Banner Section */}
       <BannerSection>
         <BannerContent>
