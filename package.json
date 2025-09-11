@@ -2,7 +2,7 @@
   "name": "travel-platform",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://moralesmozart.github.io/travel-platform",
+  "homepage": "https://masiascatalanas.eu",
   "dependencies": {
     "@supabase/supabase-js": "^2.56.1",
     "@testing-library/dom": "^10.4.1",

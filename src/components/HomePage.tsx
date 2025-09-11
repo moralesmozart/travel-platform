@@ -889,13 +889,13 @@ const HomePage: React.FC<HomePageProps> = ({ onFindMasia, onAdminLogin, onSubmit
   const handleAdminLogin = () => {
     console.log('Admin Login clicked');
     // Navegar usando HashRouter
-    window.location.href = '/travel-platform/#/admin/login';
+    window.location.href = '/#/admin/login';
   };
 
   const handleBannerCTA = () => {
     console.log('Banner CTA clicked - redirecting to masia submission');
     // Navegar al formulario de envío de masias
-    window.location.href = '/travel-platform/#/submit-masia';
+    window.location.href = '/#/submit-masia';
   };
 
     return (
