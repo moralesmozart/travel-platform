@@ -13,6 +13,11 @@ export const filterMasiasByPreferences = async (
   try {
     // Obtener masías aprobadas de Supabase
     const approvedMasias = await masiasDB.getApprovedMasias();
+    
+    // Si no hay preferencias, devolver todas las masías aprobadas
+    if (!preferences || Object.keys(preferences).length === 0) {
+      return approvedMasias;
+    }
 
     // Filtrar por presupuesto
     let filteredMasias = approvedMasias;
@@ -32,7 +37,7 @@ export const filterMasiasByPreferences = async (
     }
 
     // Filtrar por compañía
-    if (preferences.companions) {
+    if (preferences.companions && preferences.companions.length > 0) {
       if (preferences.companions.includes('solo')) {
         filteredMasias = filteredMasias.filter(masia => masia.capacity <= 4);
       }
@@ -54,7 +59,7 @@ export const filterMasiasByPreferences = async (
     }
 
     // Filtrar por experiencias
-    if (preferences.experiences) {
+    if (preferences.experiences && preferences.experiences.length > 0) {
       if (preferences.experiences.includes('nature')) {
         filteredMasias = filteredMasias.filter(masia => 
           masia.activities.some(activity => 
@@ -85,10 +90,23 @@ export const filterMasiasByPreferences = async (
       }
     }
 
+    // Si después del filtrado no hay masías, devolver todas las aprobadas como fallback
+    if (filteredMasias.length === 0) {
+      console.log('🔍 No se encontraron masías con las preferencias especificadas. Mostrando todas las masías aprobadas como fallback.');
+      return approvedMasias;
+    }
+
     return filteredMasias;
   } catch (error) {
     console.error('Error filtering masias:', error);
-    return [];
+    // En caso de error, devolver todas las masías aprobadas como fallback
+    try {
+      const approvedMasias = await masiasDB.getApprovedMasias();
+      return approvedMasias;
+    } catch (fallbackError) {
+      console.error('Error en fallback:', fallbackError);
+      return [];
+    }
   }
 };
 

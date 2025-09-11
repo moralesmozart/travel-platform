@@ -1,12 +1,17 @@
 import { createClient } from '@supabase/supabase-js';
 import { convertToDatabaseFormat, convertFromDatabaseFormat } from '../utils/fieldConverter';
+import { getSupabaseConfig, isConfigValid } from './config';
 
-// Configuración de Supabase
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || '';
+// Verificar que la configuración esté completa
+if (!isConfigValid()) {
+  console.error('❌ Configuración de Supabase incompleta. Verifica las variables de entorno.');
+}
+
+// Obtener configuración de Supabase
+const { url, anonKey } = getSupabaseConfig();
 
 // Crear cliente de Supabase
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(url, anonKey);
 
 // Tipos para la base de datos
 export interface Masia {

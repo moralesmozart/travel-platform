@@ -718,7 +718,7 @@ Ubicación: ${masia.location}
         {loading ? (
           <EmptyState>
             <EmptyStateIcon>⏳</EmptyStateIcon>
-            <h3>Cargando masías desde Supabase...</h3>
+            <h3>Usando nuestra inteligencia y encontrando la mejor masía para ti...</h3>
             <p>Espera un momento mientras se cargan los datos.</p>
           </EmptyState>
         ) : filteredMasias.length === 0 ? (

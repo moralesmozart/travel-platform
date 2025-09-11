@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { Search, AlertTriangle, HelpCircle, Calendar, BookOpen, TrendingUp, TreePine, Wine, Heart, Plus, Settings } from 'lucide-react';
+import { Search, AlertTriangle, HelpCircle, Calendar, BookOpen, TrendingUp, TreePine, Wine, Heart, Plus, Settings, Send } from 'lucide-react';
 import { testSupabaseConnection, checkEnvironmentVariables } from '../utils/testSupabase';
 import { verifySupabaseSetup, verifyProductionSetup } from '../utils/verifySupabase';
 import { debugSupabaseData } from '../utils/debugSupabase';
@@ -14,7 +14,7 @@ const HomeContainer = styled.div`
 
 const AdminButton = styled.button`
   position: fixed;
-  top: 20px;
+  top: 120px;
   right: 20px;
   background: rgba(255, 255, 255, 0.9);
   border: none;
@@ -28,12 +28,72 @@ const AdminButton = styled.button`
   color: #667eea;
   font-weight: 500;
   transition: all 0.3s ease;
-  z-index: 1000;
+  z-index: 1001;
   
   &:hover {
     background: white;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+`;
+
+// Banner Section
+const BannerSection = styled.div`
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 24px 0;
+  text-align: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+`;
+
+const BannerContent = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+`;
+
+const BannerText = styled.div`
+  font-size: 1.5rem;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+`;
+
+const BannerTextLine = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+const BannerCTA = styled.button`
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
   }
 `;
 
@@ -53,6 +113,7 @@ const HeroSection = styled.section`
   background-attachment: fixed;
   color: white;
   text-align: center;
+  margin-top: 120px; /* Compensar el banner fijo */
 `;
 
 const HeroContent = styled.div`
@@ -831,12 +892,38 @@ const HomePage: React.FC<HomePageProps> = ({ onFindMasia, onAdminLogin, onSubmit
     window.location.href = '/travel-platform/#/admin/login';
   };
 
+  const handleBannerCTA = () => {
+    console.log('Banner CTA clicked - redirecting to masia submission');
+    // Navegar al formulario de envío de masias
+    window.location.href = '/travel-platform/#/submit-masia';
+  };
+
     return (
     <HomeContainer>
       <AdminButton onClick={handleAdminLogin}>
         <Settings size={14} />
         Admin
       </AdminButton>
+      
+      {/* Banner Section */}
+      <BannerSection>
+        <BannerContent>
+          <BannerText>
+            <BannerTextLine>
+              🎉 ¡Únete hoy por 3 meses gratis!
+            </BannerTextLine>
+            <BannerTextLine style={{ fontSize: '1rem', fontWeight: '400' }}>
+              Después de 3 meses te contactaremos y explicaremos los siguientes pasos, tú decides si continuar o no, sin ningún costo
+            </BannerTextLine>
+            <BannerTextLine style={{ marginTop: '8px' }}>
+              <BannerCTA onClick={handleBannerCTA}>
+                <Send size={16} />
+                Enviar mi Masia
+              </BannerCTA>
+            </BannerTextLine>
+          </BannerText>
+        </BannerContent>
+      </BannerSection>
       
       {/* Hero Section */}
       <HeroSection>

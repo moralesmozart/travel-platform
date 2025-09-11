@@ -266,6 +266,38 @@ const ButtonContainer = styled.div`
   margin-top: 20px;
 `;
 
+const PreferencesInfo = styled.div`
+  background: #E8F5E8;
+  border: 1px solid #C8E6C9;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 32px;
+  text-align: center;
+`;
+
+const PreferencesTitle = styled.h3`
+  color: #2E7D32;
+  margin: 0 0 16px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+`;
+
+const PreferencesList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+`;
+
+const PreferenceTag = styled.span`
+  background: #4CAF50;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+`;
+
 // Usar solo masías aprobadas de la base de datos
 const ResultsPage: React.FC<ResultsPageProps> = ({
   onNewSearch,
@@ -276,22 +308,37 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
 }) => {
   const [masias, setMasias] = useState<Masia[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isFallback, setIsFallback] = useState(false);
+  const [totalApprovedMasias, setTotalApprovedMasias] = useState(0);
 
   useEffect(() => {
     const loadMasias = async () => {
       try {
         setLoading(true);
+        setIsFallback(false);
+        
         // Siempre cargar masías aprobadas desde Supabase
         let approvedMasias = await masiasDB.getApprovedMasias();
+        setTotalApprovedMasias(approvedMasias.length);
         console.log('📊 Masías cargadas desde Supabase:', approvedMasias.length);
         
         // Si hay preferencias, filtrar las masías
-        if (preferences) {
-          approvedMasias = await filterMasiasByPreferences(preferences);
-          console.log('🔍 Masías filtradas según preferencias:', approvedMasias.length);
+        if (preferences && Object.keys(preferences).length > 0) {
+          const filteredMasias = await filterMasiasByPreferences(preferences);
+          console.log('🔍 Masías filtradas según preferencias:', filteredMasias.length);
+          
+          // Si no hay resultados filtrados, usar fallback
+          if (filteredMasias.length === 0) {
+            console.log('🔄 No se encontraron masías con las preferencias. Usando fallback.');
+            setIsFallback(true);
+            setMasias(approvedMasias);
+          } else {
+            setMasias(filteredMasias);
+          }
+        } else {
+          // Sin preferencias, mostrar todas
+          setMasias(approvedMasias);
         }
-        
-        setMasias(approvedMasias);
       } catch (error) {
         console.error('❌ Error loading masias from Supabase:', error);
         setMasias([]);
@@ -314,7 +361,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
     return (
       <Container>
         <Content>
-          <PageTitle>Cargando masías desde Supabase...</PageTitle>
+          <PageTitle>Usando nuestra inteligencia y encontrando la mejor masía para ti...</PageTitle>
           <PageSubtitle>Buscando las mejores opciones para ti</PageSubtitle>
         </Content>
       </Container>
@@ -328,19 +375,73 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
           <ArrowLeft size={20} />
           Nueva búsqueda
         </BackButton>
-        <ResultsCount>{masias.length} masias encontradas</ResultsCount>
+        <ResultsCount>
+          {isFallback 
+            ? `${masias.length} masías disponibles (fallback)`
+            : `${masias.length} masías encontradas`
+          }
+        </ResultsCount>
       </Header>
 
       <Content>
         <PageTitle>Masias Perfectas para Ti</PageTitle>
         <PageSubtitle>
-          Seleccionadas especialmente basadas en tus preferencias
+          {isFallback 
+            ? `No se encontraron masías que coincidan exactamente con tus preferencias. Te mostramos todas las masías disponibles (${totalApprovedMasias} masías aprobadas).`
+            : `Seleccionadas especialmente basadas en tus preferencias (${masias.length} de ${totalApprovedMasias} masías aprobadas)`
+          }
         </PageSubtitle>
+
+        {/* Mostrar preferencias del usuario */}
+        {preferences && Object.keys(preferences).length > 0 && (
+          <PreferencesInfo>
+            <PreferencesTitle>🎯 Tus Preferencias de Búsqueda</PreferencesTitle>
+            <PreferencesList>
+              {preferences.seasons && preferences.seasons.map((season, index) => (
+                <PreferenceTag key={`season-${index}`}>🌤️ {season}</PreferenceTag>
+              ))}
+              {preferences.experiences && preferences.experiences.map((exp, index) => (
+                <PreferenceTag key={`exp-${index}`}>🎯 {exp}</PreferenceTag>
+              ))}
+              {preferences.companions && preferences.companions.map((comp, index) => (
+                <PreferenceTag key={`comp-${index}`}>👥 {comp}</PreferenceTag>
+              ))}
+              {preferences.duration && (
+                <PreferenceTag>⏱️ {preferences.duration}</PreferenceTag>
+              )}
+              {preferences.budget && (
+                <PreferenceTag>💰 {preferences.budget}</PreferenceTag>
+              )}
+            </PreferencesList>
+          </PreferencesInfo>
+        )}
+
+        {/* Mensaje de fallback */}
+        {isFallback && (
+          <div style={{
+            background: '#FFF3CD',
+            border: '1px solid #FFEAA7',
+            borderRadius: '8px',
+            padding: '16px',
+            marginBottom: '24px',
+            textAlign: 'center'
+          }}>
+            <p style={{ margin: '0', color: '#856404', fontSize: '0.95rem' }}>
+              💡 <strong>Consejo:</strong> No se encontraron masías que coincidan exactamente con tus preferencias. 
+              Te mostramos todas las masías disponibles para que puedas explorar opciones alternativas.
+            </p>
+          </div>
+        )}
 
         {masias.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '40px' }}>
-            <h3>No se encontraron masías</h3>
-            <p>No hay masías aprobadas disponibles en este momento.</p>
+            <h3>No hay masías disponibles</h3>
+            <p>
+              {totalApprovedMasias === 0 
+                ? 'No hay masías aprobadas disponibles en este momento. Vuelve más tarde o contacta con el administrador.'
+                : 'No se encontraron masías que coincidan con tus preferencias y no hay masías aprobadas disponibles como alternativa.'
+              }
+            </p>
             <button 
               onClick={handleNewSearch}
               style={{

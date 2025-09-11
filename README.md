@@ -39,9 +39,9 @@ cd travel-platform
 # Instalar dependencias
 npm install
 
-# Configurar variables de entorno (opcional)
-cp .env.example .env.local
-# Edita .env.local con tus credenciales
+# Configurar variables de entorno (desarrollo local)
+cp env.example .env.local
+# Edita .env.local con tus credenciales de Supabase
 
 # Ejecutar en modo desarrollo
 npm start
@@ -125,17 +125,24 @@ npm run deploy
 
 ## 🔧 Configuración de Desarrollo
 
-### Variables de Entorno
+### Variables de Entorno (Desarrollo Local)
 ```bash
 # Crear archivo .env.local para configuraciones locales
+REACT_APP_SUPABASE_URL=https://your-project-id.supabase.co
+REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key_here
 REACT_APP_ADMIN_EMAIL=admin@masiaconnect.com
 REACT_APP_ADMIN_PASSWORD=admin123
-REACT_APP_API_URL=your_api_url
 REACT_APP_ENVIRONMENT=development
 
 # Hotjar Configuration
 REACT_APP_HOTJAR_ID=your_hotjar_id_here
 ```
+
+### ⚠️ Importante: Configuración de Producción
+Para **GitHub Pages**, las credenciales de Supabase están configuradas en `src/config/config.ts`. 
+No es necesario configurar variables de entorno adicionales.
+
+**Ver archivo `CONFIGURATION.md` para detalles completos de configuración.**
 
 ### 🔒 Seguridad
 - Las credenciales de administrador están configuradas en variables de entorno
@@ -155,6 +162,33 @@ REACT_APP_HOTJAR_ID=your_hotjar_id_here
 3. Commit tus cambios (`git commit -m 'Añadir nueva funcionalidad'`)
 4. Push a la rama (`git push origin feature/NuevaFuncionalidad`)
 5. Abre un Pull Request
+
+## 🚨 Solución de Problemas
+
+### Error: "No API key found in request"
+Si encuentras este error al enviar una masía, significa que las credenciales de Supabase no están configuradas correctamente.
+
+**Solución:**
+1. **Desarrollo local**: Verifica tu archivo `.env.local`
+2. **Producción**: Las credenciales están en `src/config/config.ts`
+3. **Ver archivo `CONFIGURATION.md`** para solución completa
+
+### Error: "new row violates row-level security policy"
+Si encuentras este error después de resolver el problema de la API key, significa que las políticas de RLS en Supabase están bloqueando la inserción.
+
+**Solución:**
+1. **Ver archivo `RLS_FIX_INSTRUCTIONS.md`** para solución paso a paso
+2. **Ejecutar script SQL** en Supabase Dashboard
+3. **Usar `database/setup_rls_production.sql`** para configuración correcta
+
+### Herramientas de Diagnóstico
+```bash
+# Verificar configuración
+npm run check-config
+
+# Test de Supabase (en consola del navegador)
+window.testSupabase.runTest()
+```
 
 ## 📝 Roadmap
 
