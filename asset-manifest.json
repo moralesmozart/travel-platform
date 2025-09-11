@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/travel-platform/static/css/main.ba257100.css",
-    "main.js": "/travel-platform/static/js/main.f5768a77.js",
-    "static/js/453.05b6d40c.chunk.js": "/travel-platform/static/js/453.05b6d40c.chunk.js",
-    "index.html": "/travel-platform/index.html",
-    "main.ba257100.css.map": "/travel-platform/static/css/main.ba257100.css.map",
-    "main.f5768a77.js.map": "/travel-platform/static/js/main.f5768a77.js.map",
-    "453.05b6d40c.chunk.js.map": "/travel-platform/static/js/453.05b6d40c.chunk.js.map"
+    "main.css": "/static/css/main.ba257100.css",
+    "main.js": "/static/js/main.b3883b65.js",
+    "static/js/453.05b6d40c.chunk.js": "/static/js/453.05b6d40c.chunk.js",
+    "index.html": "/index.html",
+    "main.ba257100.css.map": "/static/css/main.ba257100.css.map",
+    "main.b3883b65.js.map": "/static/js/main.b3883b65.js.map",
+    "453.05b6d40c.chunk.js.map": "/static/js/453.05b6d40c.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.ba257100.css",
-    "static/js/main.f5768a77.js"
+    "static/js/main.b3883b65.js"
   ]
 }
