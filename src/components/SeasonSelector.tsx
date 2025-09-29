@@ -1,15 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { ArrowLeft, ArrowRight, Check, Flower, Sun, Leaf, Snowflake, TreePine, BookOpen, Wine, Heart, Calendar, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Flower, Sun, Leaf, Snowflake, TreePine, BookOpen, Wine, Calendar, AlertTriangle } from 'lucide-react';
 
 // Tipos TypeScript
-interface Season {
-  id: string;
-  name: string;
-  description: string;
-  icon: React.ReactNode;
-  color: string;
-}
 
 interface SeasonSelectorProps {
   currentStep?: number;

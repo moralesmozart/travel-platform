@@ -1,19 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { 
   ArrowLeft, 
   Save, 
   X, 
   Plus, 
-  Trash2,
   MapPin,
   Star,
   Users,
-  Car,
-  Calendar,
   Heart,
-  TreePine,
-  Wine,
   Sun,
   Snowflake,
   Flower,
@@ -257,21 +252,6 @@ const NumberInput = styled.input`
   }
 `;
 
-const Select = styled.select`
-  width: 100%;
-  padding: 12px;
-  border: 2px solid #E8E8E8;
-  border-radius: 8px;
-  font-size: 1rem;
-  background: white;
-  transition: all 0.2s;
-  
-  &:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-  }
-`;
 
 const CheckboxGroup = styled.div`
   display: grid;
@@ -371,7 +351,6 @@ const ImagePreview = styled.div<{ image: string }>`
 
 const MasiaEditor: React.FC<MasiaEditorProps> = ({ masia, onSave, onCancel }) => {
   const [editedMasia, setEditedMasia] = useState<Masia>(masia);
-  const [newTag, setNewTag] = useState('');
   const [newRecommendation, setNewRecommendation] = useState('');
   const [newFeature, setNewFeature] = useState('');
   const [newAmenity, setNewAmenity] = useState('');

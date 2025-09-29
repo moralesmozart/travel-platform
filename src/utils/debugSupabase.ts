@@ -6,7 +6,7 @@ export const debugSupabaseData = async () => {
   try {
     // 1. Verificar conexión básica
     console.log('1️⃣ Probando conexión básica...');
-    const { data: testData, error: testError } = await supabase
+    const { error: testError } = await supabase
       .from('masias')
       .select('*')
       .limit(1);

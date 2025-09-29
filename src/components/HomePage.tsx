@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { Search, AlertTriangle, HelpCircle, Calendar, BookOpen, TrendingUp, TreePine, Wine, Heart, Plus, Send } from 'lucide-react';
-import { testSupabaseConnection, checkEnvironmentVariables } from '../utils/testSupabase';
+import { checkEnvironmentVariables } from '../utils/testSupabase';
 import { verifySupabaseSetup, verifyProductionSetup } from '../utils/verifySupabase';
 import { debugSupabaseData } from '../utils/debugSupabase';
 import { simpleSupabaseTest } from '../utils/simpleTest';
@@ -435,62 +435,8 @@ const GrowthHeader = styled.div`
   margin-bottom: 24px;
 `;
 
-const GrowthBar = styled.div`
-  position: relative;
-  height: 80px;
-  margin: 16px 0 40px 0;
-  display: flex;
-  align-items: flex-end;
-  gap: 20px;
-`;
 
-const GrowthBarItem = styled.div<{ height: number; color: string; label: string }>`
-  position: relative;
-  width: 60px;
-  height: ${props => props.height}px;
-  background: ${props => props.color};
-  border-radius: 8px 8px 0 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  padding-bottom: 8px;
-  color: white;
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-align: center;
-  
-  &::after {
-    content: '${props => props.label}';
-    position: absolute;
-    bottom: -25px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.6rem;
-    color: #7F8C8D;
-    white-space: nowrap;
-  }
-`;
 
-const GrowthCurve = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, #4CAF50 0%, #45a049 100%);
-    border-radius: 1px;
-  }
-`;
 
 const PricingSection = styled.section`
   background: #f8f9fa;
@@ -824,7 +770,7 @@ const HomePage: React.FC<HomePageProps> = ({ onFindMasia, onAdminLogin, onSubmit
       console.log('🚀 Iniciando verificación completa de Supabase...');
       
       // Verificar configuración de producción
-      const productionInfo = verifyProductionSetup();
+      verifyProductionSetup();
       
       // Verificar variables de entorno
       const envOk = checkEnvironmentVariables();

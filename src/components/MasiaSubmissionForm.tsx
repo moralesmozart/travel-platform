@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { ArrowLeft, Save, X, Search, MapPin, Users, Settings } from 'lucide-react';
+import { ArrowLeft, Save, X, MapPin, Users, Settings } from 'lucide-react';
 import { addMasiaToDatabase } from '../data/masiasDatabase';
-import { testMasiaSubmission, testMasiaSubmissionWithFormData } from '../utils/testMasiaSubmission';
 import ImageUpload from './ImageUpload';
 
 interface MasiaSubmissionFormProps {
@@ -327,14 +326,6 @@ const ImagePreview = styled.div`
   }
 `;
 
-const FormActions = styled.div`
-  display: flex;
-  gap: 15px;
-  justify-content: flex-end;
-  margin-top: 40px;
-  padding-top: 20px;
-  border-top: 2px solid #f0f0f0;
-`;
 
 
 
@@ -524,7 +515,7 @@ const validateEmail = (email: string): boolean => {
 // Función para validar teléfono con regex más estricto
 const validatePhone = (phone: string): boolean => {
   // Limpiar el teléfono de caracteres especiales
-  const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+  const cleanPhone = phone.replace(/[\s\-()]/g, '');
   // Validar formato internacional o nacional español
   const phoneRegex = /^(\+34|34)?[6789]\d{8}$/;
   return phoneRegex.test(cleanPhone);
@@ -635,7 +626,6 @@ const MasiaSubmissionForm: React.FC<MasiaSubmissionFormProps> = ({ onBack, onSub
   // Estados para validación
   const [emailError, setEmailError] = useState('');
   const [phoneError, setPhoneError] = useState('');
-  const [checkboxError, setCheckboxError] = useState('');
   
   // Estados para selector de país
   const [selectedCountry, setSelectedCountry] = useState(countries[0]);
@@ -805,7 +795,7 @@ const MasiaSubmissionForm: React.FC<MasiaSubmissionFormProps> = ({ onBack, onSub
   // Función para validar teléfono en tiempo real
   const handlePhoneChange = (phone: string) => {
     // Solo permitir números, +, espacios, guiones y paréntesis
-    const cleanPhone = phone.replace(/[^\d\s\+\-\(\)]/g, '');
+    const cleanPhone = phone.replace(/[^\d\s+\-()]/g, '');
     setFormData(prev => ({
       ...prev,
       ownerPhone: cleanPhone

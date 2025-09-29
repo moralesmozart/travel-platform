@@ -18,7 +18,7 @@ export const verifySupabaseSetup = async () => {
     
     // 2. Verificar conexión básica
     console.log('🔌 Probando conexión...');
-    const { data: testData, error: testError } = await supabase
+    const { error: testError } = await supabase
       .from('masias')
       .select('count')
       .limit(1);

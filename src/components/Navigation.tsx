@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Routes, Route, useNavigate, useLocation, Navigate, Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import styled from 'styled-components';
 import HomePage from './HomePage';
 import SeasonSelector from './SeasonSelector';
@@ -8,7 +8,7 @@ import AdminLogin from './AdminLogin';
 import AdminDashboard from './AdminDashboard';
 import MasiaSubmissionForm from './MasiaSubmissionForm';
 
-import { filterMasiasByPreferences, addMasiaToDatabase } from '../data/masiasDatabase';
+// import { filterMasiasByPreferences } from '../data/masiasDatabase';
 import { validateAdminCredentials } from '../config/auth';
 import { loginRateLimiter } from '../utils/rateLimiter';
 import RateLimitMonitor from './RateLimitMonitor';
@@ -30,7 +30,6 @@ const NavigationContainer = styled.div`
 
 const Navigation: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedSeason, setSelectedSeason] = useState<string>('');
   const [allSelections, setAllSelections] = useState<{[key: number]: string[]}>({});

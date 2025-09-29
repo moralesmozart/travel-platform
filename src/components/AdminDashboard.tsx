@@ -6,8 +6,6 @@ import {
   CheckCircle, 
   XCircle, 
   Edit, 
-  Plus,
-  Users,
   Home,
   AlertTriangle
 } from 'lucide-react';
@@ -564,7 +562,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onBack }) => 
 
   const handleSaveEdit = async (updatedMasia: Masia) => {
     // Actualizar en Supabase
-    const success = await updateMasiaInDatabase(updatedMasia);
+    await updateMasiaInDatabase(updatedMasia);
     
     // Actualizar en el estado local
     setMasias(prev => prev.map(masia => 
